@@ -1,427 +1,192 @@
+<!-- nokey: cloning, forking, mirroring prohibited -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3‑STERNE · GENERAL · PREFETCH · PREDICT · CACHE · VEREINHEITLICHT</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a12;color:#d0d9e6;font-family:'Consolas',monospace;padding:10px;min-height:100vh}
-        h1{text-align:center;letter-spacing:3px;font-weight:300;font-size:22px;background:linear-gradient(90deg,#ffd700,#00ccff,#ff66ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-        h1 small{font-size:10px;display:block;color:#3d5a70;-webkit-text-fill-color:#3d5a70;letter-spacing:2px}
-        .flex{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:3px 0}
-        .panel{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,200,255,0.08)}
-        .panel h3{font-size:10px;color:#3d5a70;letter-spacing:2px;margin-bottom:5px;text-transform:uppercase}
-        button{background:#0f0;color:#000;font-weight:bold;border:none;padding:4px 12px;border-radius:4px;font-family:monospace;font-size:10px;cursor:pointer}
-        button:hover{background:#0ff}
-        button.sec{background:transparent;color:#0f0;border:1px solid #0f0}
-        button.sec:hover{background:#0f0;color:#000}
-        button.gold{background:#ffd700;color:#000}
-        button.gold:hover{background:#ffaa00}
-        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-        @media(max-width:700px){.grid2{grid-template-columns:1fr}}
-        pre{background:rgba(0,0,0,0.4);padding:8px;border-radius:6px;border:1px solid rgba(0,200,255,0.05);font-size:9px;line-height:1.3;white-space:pre-wrap;color:#8ab4c8;margin:4px 0;max-height:120px;overflow:auto}
-        .badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:8px;margin:0 2px}
-        .badge.info{background:#0a1a2a;color:#66ccff}
-        .status-row{display:flex;flex-wrap:wrap;gap:6px;font-size:9px;margin:3px 0;color:#5a7a8a}
-        .status-row span{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:3px}
-        .console{background:#0a0a0a;padding:6px;border-radius:4px;font-size:7px;color:#3d5a70;max-height:80px;overflow-y:auto;border:1px solid #111}
-        .console .log-ok{color:#6bffa9}
-        .console .log-warn{color:#ffd700}
-        .console .log-info{color:#66ccff}
-        .console .log-err{color:#ff6b8a}
-        .matrix-3x2{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:4px 0}
-        .cell{background:#0a0a0a;padding:4px;text-align:center;font-size:8px;border:1px solid #111;border-radius:3px;color:#3d5a70}
-        .cell.active{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
-        .cell.gold{background:#2a1a0a;color:#ffd700;border-color:#ffd700}
-        .axle-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin:3px 0}
-        .axle-cell{background:#0a0a0a;padding:3px;text-align:center;font-size:7px;border:1px solid #111;border-radius:2px;color:#3d5a70;cursor:pointer}
-        .axle-cell.on{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
-        .axle-cell.off{background:#0a0a0a;color:#3d5a70}
-        .metric-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0}
-        .metric{background:#0a0a0a;padding:6px;border-radius:4px;text-align:center;border:1px solid #1a1a2a}
-        .metric .label{font-size:7px;color:#3d5a70;text-transform:uppercase}
-        .metric .value{font-size:16px;font-weight:bold;color:#6bffa9}
-        .metric .value.gold{color:#ffd700}
-        .metric .value.info{color:#66ccff}
-    </style>
+<meta charset="UTF-8">
+<title>rom.drive · human · org · reorg</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body{background:#0a0a12;color:#d0d9e6;font-family:Consolas,monospace;padding:20px}
+    h1{text-align:center;font-size:22px;letter-spacing:3px;margin-bottom:4px;
+        background:linear-gradient(90deg,#00ff88,#00ccff,#ff66ff,#ffd700);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    h2{text-align:center;font-size:10px;color:#3d5a70;margin-top:-6px;letter-spacing:2px}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+    .panel{background:#0f0f18;border:1px solid #1a1a2a;padding:12px;border-radius:8px}
+    .panel h3{font-size:10px;color:#3d5a70;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}
+
+    .status{display:flex;flex-wrap:wrap;gap:6px;font-size:9px}
+    .status span{background:#111;padding:4px 6px;border-radius:4px}
+
+    .green{color:#00ff88}
+    .yellow{color:#ffd700}
+    .red{color:#ff4466}
+
+    pre{background:#111;padding:10px;border-radius:6px;font-size:9px;max-height:160px;overflow:auto;color:#8ab4c8}
+
+    .module-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .module{background:#111;padding:8px;border-radius:6px;text-align:center;font-size:9px;border:1px solid #222}
+
+    .file-list{font-size:9px;line-height:1.4;color:#8ab4c8}
+</style>
 </head>
+
 <body>
 
-<h1>⭐ 3‑STERNE · GENERAL</h1>
-<h1 style="font-size:11px;margin-top:-2px;background:none;-webkit-text-fill-color:#3d5a70;color:#3d5a70;font-weight:400">PREFETCH · PREDICT · CACHE · VEREINHEITLICHTE LOGIK</h1>
+<h1>rom.drive</h1>
+<h2>human · org · reorg</h2>
 
-<div class="grid2">
-  <div>
-    <div class="panel">
-      <h3>🎯 INDUSTRY · STEUERUNG</h3>
-      <div class="flex">
-        <button class="gold" id="btnGeneral">⚡ GENERAL RUN</button>
-        <button id="btnReset">⟲ RESET</button>
-        <button class="sec" id="btnToggleAll">🔄 ALL TOGGLE</button>
-        <button id="btnRandom">🎲 RANDOM</button>
-        <button id="btnPump">💨 PUMP</button>
-        <button id="btnLoop">♾ LOOP ALL</button>
-      </div>
-    </div>
+<div class="grid">
 
+    <!-- SYSTEM STATUS -->
     <div class="panel">
-      <h3>🌀 9 ACHSEN · d e i n o r s u w</h3>
-      <div class="axle-grid" id="axleGrid"></div>
-    </div>
-
-    <div class="panel">
-      <h3>🔷 PUMP · STATIONEN</h3>
-      <div class="flex" style="font-size:8px;color:#5a7a8a;gap:2px">
-        <span class="badge info">HY</span><span class="badge info">PE</span>
-        <span class="badge info">PER</span><span class="badge info">DA</span>
-        <span class="badge info">NE</span><span class="badge info">BEN</span>
-        <span class="badge info">TRANS</span><span class="badge info">WARB</span>
-        <span class="badge info">KANAL</span>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>📊 STATUS</h3>
-      <div class="status-row">
-        <span>SCORE: <span id="scoreVal" style="color:#ffd700">0</span></span>
-        <span>PUMP: <span id="pumpVal" style="color:#6bffa9">0</span></span>
-        <span>QUOTE: <span id="quoteVal" style="color:#66ccff">0%</span></span>
-        <span>PREDICT: <span id="predictVal" style="color:#ffd700">IDLE</span></span>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>📜 CONSOLE · LOG</h3>
-      <div class="console" id="consoleLog">⏳ system initialisiert...</div>
-    </div>
-  </div>
-
-  <div>
-    <div class="panel">
-      <h3>📊 3 ANZEIGEN · PREFETCH · PREDICT · CACHE</h3>
-      <div class="metric-grid">
-        <div class="metric">
-          <div class="label">📦 PREFETCH</div>
-          <div class="value" id="prefetchCount">0</div>
+        <h3>📡 SYSTEM · STATUS</h3>
+        <div class="status">
+            <span>NC.mode: <span id="ncMode" class="yellow">…</span></span>
+            <span>rom.ready: <span id="romReady" class="yellow">…</span></span>
+            <span>sli.ready: <span id="sliReady" class="yellow">…</span></span>
+            <span>sync: <span id="syncState" class="yellow">…</span></span>
         </div>
-        <div class="metric">
-          <div class="label">🧠 PREDICT</div>
-          <div class="value gold" id="predictCount">0</div>
+    </div>
+
+    <!-- MODULE OVERVIEW -->
+    <div class="panel">
+        <h3>🧩 MODULE · OVERVIEW</h3>
+        <div class="module-grid">
+            <div class="module">MOVE</div>
+            <div class="module">FORM</div>
+            <div class="module">VEC</div>
+            <div class="module">SYN</div>
         </div>
-        <div class="metric">
-          <div class="label">💾 CACHE</div>
-          <div class="value info" id="cacheCount">0</div>
-        </div>
-      </div>
     </div>
 
+    <!-- TMP AXES -->
     <div class="panel">
-      <h3>📊 3×2 PREFETCH · IKI1UC</h3>
-      <div class="matrix-3x2" id="prefetchGrid"></div>
+        <h3>🔠 TMP · ACHSEN</h3>
+        <div class="file-list" id="tmpList">lade…</div>
     </div>
 
+    <!-- LOOPS -->
     <div class="panel">
-      <h3>📈 MASSNAHME · ERGEBNISSE</h3>
-      <pre id="resultDisplay">⏳ berechne...</pre>
+        <h3>♾ LOOPS · USE / USER</h3>
+        <div class="file-list" id="loopList">lade…</div>
     </div>
 
+    <!-- USER JSON -->
     <div class="panel">
-      <h3>❓ MYSTERY ACHSEN · Q / D / F</h3>
-      <div class="flex" style="font-size:8px;gap:6px">
-        <span>Q: <span id="qVal" style="color:#66ccff">0</span></span>
-        <span>D: <span id="dVal" style="color:#6bffa9">0</span></span>
-        <span>F: <span id="fVal" style="color:#ffd700">0</span></span>
-        <span style="color:#3d5a70">|</span>
-        <span>ROOT: <span id="rootVal" style="color:#6bffa9">0</span></span>
-        <span>ACHSE: <span id="achseVal" style="color:#66ccff">A</span></span>
-        <span>TMP: <span id="tmpVal" style="color:#ffd700">128</span></span>
-      </div>
+        <h3>👤 USER.JSON</h3>
+        <pre id="userJson">lade…</pre>
     </div>
 
+    <!-- LICENSE -->
     <div class="panel">
-      <h3>🧠 CPU PREDICTIVE · SPRUNG</h3>
-      <div class="flex" style="font-size:8px;gap:6px">
-        <span>STATUS: <span id="cpuStatus" style="color:#6bffa9">ACTIVE</span></span>
-        <span>BIAS: <span id="cpuBias" style="color:#ffd700">FORWARD</span></span>
-        <span>SPRUNG: <span id="cpuJump" style="color:#ff6b8a">0</span></span>
-      </div>
+        <h3>🔒 CLOSED · LIZENZ</h3>
+        <pre>
+Kein Klonen.
+Kein Forken.
+Kein Spiegeln.
+Kein Export.
+Nur Original.
+Nur hier.
+Nur jetzt.
+        </pre>
     </div>
 
-    <div class="panel">
-      <h3>🔄 3×2 FENSTER · LIVE</h3>
-      <div class="matrix-3x2" id="liveWindow"></div>
-    </div>
-  </div>
 </div>
 
 <script>
-// ============================================================
-// IKI1UC · 3‑STERNE‑GENERAL · PREFETCH · PREDICT · CACHE
-// VEREINHEITLICHT: eine einzige Berechnungsfunktion (sync),
-// die JEDE Aktion aufruft — nicht nur LOOP ALL — und nur EIN
-// render() pro Klick.
-// ============================================================
-const engine = {
-
-  state: {
-    score: 1000, pump: 0, quote: 0.5, predict: 'IDLE',
-    cpuJump: 0, cpuBias: 'FORWARD', root: 0, achse: 'A', tmp: 128,
-    q: 27, d: 81, f: 243,
-    prefetchCount: 0, predictCount: 0, cacheCount: 0
-  },
-
-  axles: 'deinorsuw'.split('').map(ch => ({ name: ch, active: false })),
-  stations: ['HY','PE','PER','DA','NE','BEN','TRANS','WARB','KANAL'],
-  prefetch: [[3, 9], [27, 81], [243, 729]],
-  liveWindow: [['3','9'], ['27','81'], ['243','729']],
-  memory: { hits: 0, misses: 0, slides: [], jumps: [] },
-
-  log(msg, type = 'info') {
-    const el = document.getElementById('consoleLog');
-    const t = new Date().toLocaleTimeString();
-    const cls = type === 'ok' ? 'log-ok' : type === 'warn' ? 'log-warn' : type === 'err' ? 'log-err' : 'log-info';
-    el.innerHTML += `<div class="${cls}">[${t}] ${msg}</div>`;
-    el.scrollTop = el.scrollHeight;
-    if (el.children.length > 30) el.removeChild(el.firstChild);
-  },
-
-  // ============================================================
-  // ⭐ EINZIGE zentrale Berechnung — von JEDER Aktion aufgerufen.
-  // Keine zweite, abweichende Formel mehr an anderer Stelle.
-  // ============================================================
-  sync() {
-    const active = this.axles.filter(a => a.active).length;
-    const s = this.state;
-
-    s.root = active;
-    s.achse = active > 0 ? String.fromCharCode(64 + active) : '0';
-    s.tmp = 128 - s.pump;
-
-    s.q = 3 * active + (s.pump % 7);
-    s.d = 9 * active + Math.floor(s.pump / 4);
-    s.f = 27 * active + Math.floor(s.pump / 2);
-
-    s.cpuJump = active + Math.floor(s.pump / 8);
-    s.cpuBias = s.quote > 0.6 ? 'FORWARD' : 'REVERSE';
-    s.predict = (active > 0 && s.quote > 0.4) ? 'ACTIVE' : 'IDLE';
-
-    // Trefferquote: EINE Regel, EINE Stelle
-    if (s.cpuJump > 0) {
-      this.memory.hits++;
-      s.predictCount++;
-      this.memory.slides.push(active);
-      this.memory.jumps.push(s.cpuJump);
-    } else {
-      this.memory.misses++;
+// ------------------------------------------------------------
+// HELPER: safe fetch
+// ------------------------------------------------------------
+async function loadFile(path) {
+    try {
+        const res = await fetch(path);
+        if (!res.ok) return null;
+        return await res.text();
+    } catch {
+        return null;
     }
-    s.quote = (this.memory.hits + 1) / (this.memory.hits + this.memory.misses + 2);
+}
 
-    // Live-Fenster: EINE Formel
-    const vals = [3,9,27,81,243,729];
-    const shift = (s.root + s.pump + s.cpuJump) % 6;
-    this.liveWindow = [
-      [vals[(shift)%6], vals[(shift+1)%6]],
-      [vals[(shift+2)%6], vals[(shift+3)%6]],
-      [vals[(shift+4)%6], vals[(shift+5)%6]]
-    ];
+// ------------------------------------------------------------
+// STATUS FILES
+// ------------------------------------------------------------
+async function loadStatus() {
+    const nc = await loadFile("NC.mode");
+    const rom = await loadFile("rom.ready");
+    const sli = await loadFile("sli.ready");
+    const tmpS = await loadFile("tmp.s");
 
-    // Metriken: laufen jetzt bei JEDER Aktion mit, nicht nur bei LOOP ALL
-    s.prefetchCount++;
-    if (s.tmp > 0) s.cacheCount++;
+    document.getElementById("ncMode").textContent = nc || "still";
+    document.getElementById("romReady").textContent = rom || "idle";
+    document.getElementById("sliReady").textContent = sli || "idle";
 
-    this.render(); // genau EIN Render pro sync()-Aufruf
-  },
-
-  // ---------- RENDER ----------
-  render() {
-    this.renderAxles();
-    this.renderPrefetch();
-    this.renderLiveWindow();
-    this.updateStatus();
-    this.updateMystery();
-    this.updateCPU();
-    this.updateMetrics();
-    this.renderResult();
-  },
-
-  renderAxles() {
-    const grid = document.getElementById('axleGrid');
-    grid.innerHTML = '';
-    this.axles.forEach((a, i) => {
-      const cell = document.createElement('div');
-      cell.className = 'axle-cell' + (a.active ? ' on' : ' off');
-      cell.textContent = a.name.toUpperCase();
-      cell.onclick = () => this.toggleAxle(i);
-      grid.appendChild(cell);
-    });
-  },
-
-  renderPrefetch() {
-    const grid = document.getElementById('prefetchGrid');
-    grid.innerHTML = '';
-    this.prefetch.forEach(row => row.forEach(val => {
-      const cell = document.createElement('div');
-      cell.className = 'cell active';
-      cell.textContent = val;
-      grid.appendChild(cell);
-    }));
-  },
-
-  renderLiveWindow() {
-    const grid = document.getElementById('liveWindow');
-    grid.innerHTML = '';
-    this.liveWindow.forEach(row => row.forEach(val => {
-      const cell = document.createElement('div');
-      cell.className = 'cell gold';
-      cell.textContent = val;
-      grid.appendChild(cell);
-    }));
-  },
-
-  updateStatus() {
-    document.getElementById('scoreVal').textContent = this.state.score;
-    document.getElementById('pumpVal').textContent = this.state.pump;
-    document.getElementById('quoteVal').textContent = Math.round(this.state.quote * 100) + '%';
-    document.getElementById('predictVal').textContent = this.state.predict;
-  },
-
-  updateMystery() {
-    document.getElementById('qVal').textContent = this.state.q;
-    document.getElementById('dVal').textContent = this.state.d;
-    document.getElementById('fVal').textContent = this.state.f;
-    document.getElementById('rootVal').textContent = this.state.root;
-    document.getElementById('achseVal').textContent = this.state.achse;
-    document.getElementById('tmpVal').textContent = this.state.tmp;
-  },
-
-  updateCPU() {
-    document.getElementById('cpuStatus').textContent = this.state.predict === 'ACTIVE' ? 'ACTIVE' : 'IDLE';
-    document.getElementById('cpuBias').textContent = this.state.cpuBias;
-    document.getElementById('cpuJump').textContent = this.state.cpuJump;
-  },
-
-  updateMetrics() {
-    document.getElementById('prefetchCount').textContent = this.state.prefetchCount;
-    document.getElementById('predictCount').textContent = this.state.predictCount;
-    document.getElementById('cacheCount').textContent = this.state.cacheCount;
-  },
-
-  renderResult() {
-    const el = document.getElementById('resultDisplay');
-    const active = this.axles.filter(a => a.active).length;
-    const s = this.state;
-    el.textContent =
-`MASSNAHME · IKI1UC
-─────────────────
-aktive Achsen : ${active} / 9
-Pump-Stack    : ${s.pump} / 128
-Trefferquote  : ${Math.round(s.quote*100)}%
-Predict       : ${s.predict}
-Sprung        : ${s.cpuJump}
-Bias          : ${s.cpuBias}
-ROOT          : ${s.root}
-ACHSE         : ${s.achse}
-TMP           : ${s.tmp}
-Q:${s.q}  D:${s.d}  F:${s.f}
-PREFETCH:${s.prefetchCount}  PREDICT:${s.predictCount}  CACHE:${s.cacheCount}`;
-  },
-
-  // ============================================================
-  // ⭐ AKTIONEN — verändern nur pump/score/axles, rufen danach
-  // genau EINMAL sync() auf. Keine eigene Predict-/Metrik-Logik
-  // mehr in den einzelnen Aktionen.
-  // ============================================================
-  toggleAxle(i) {
-    this.axles[i].active = !this.axles[i].active;
-    this.log(`achse ${this.axles[i].name} → ${this.axles[i].active ? 'ON' : 'OFF'}`, 'info');
-    this.sync();
-  },
-
-  pumpCycle() {
-    const active = this.axles.filter(a => a.active).length;
-    if (active === 0) {
-      this.log('❗ keine achse aktiv — pump gestoppt', 'err');
-      return;
+    let syncState = "bla";
+    if (tmpS) {
+        const v = parseInt(tmpS.trim());
+        syncState = v > 80 ? "ja" : v > 40 ? "gelb" : "nein";
     }
-    this.stations.forEach((st, i) => {
-      if ((this.state.pump + i) % 3 === 0) {
-        this.log(`🔷 STATION ${st} → BOOST`, 'ok');
-        this.state.score += (active * (i + 1));
-      }
-    });
-    this.state.pump = Math.min(this.state.pump + active, 128);
-    this.state.score += active * 2;
-    this.log(`💨 PUMP · stack=${this.state.pump}`, 'ok');
-    this.sync();
-  },
+    document.getElementById("syncState").textContent = syncState;
+}
 
-  runGeneral() {
-    this.axles.forEach(a => a.active = true);
-    for (let i = 0; i < 3; i++) {
-      this.state.pump = Math.min(this.state.pump + 9, 128);
-      this.state.score += 9 * 2;
+// ------------------------------------------------------------
+// TMP FILES
+// ------------------------------------------------------------
+async function loadTmp() {
+    const letters = ["a","d","e","i","o","r","s","w"];
+    let html = "";
+
+    for (const l of letters) {
+        const val = await loadFile(`tmp.${l}`);
+        html += `${l.toUpperCase()}: ${val ? val.trim() : "…" }<br>`;
     }
-    this.state.score += 50;
-    this.log('⚡ GENERAL RUN · alles aktiv · score+50', 'ok');
-    this.sync();
-  },
 
-  toggleAll() {
-    const allOn = this.axles.every(a => a.active);
-    this.axles.forEach(a => a.active = !allOn);
-    this.log(`🔄 ALL TOGGLE → ${allOn ? 'OFF' : 'ON'}`, 'info');
-    this.sync();
-  },
+    document.getElementById("tmpList").innerHTML = html;
+}
 
-  randomize() {
-    this.axles.forEach(a => a.active = Math.random() > 0.5);
-    this.state.score = Math.floor(Math.random() * 500) + 500;
-    this.state.pump = Math.floor(Math.random() * 30);
-    this.log('🎲 RANDOM · neuer zustand', 'warn');
-    this.sync();
-  },
+// ------------------------------------------------------------
+// LOOPS
+// ------------------------------------------------------------
+async function loadLoops() {
+    const loops = ["1.loop","2.loop","3.loop","4.loop","8.loop","9.loop"];
+    let html = "";
 
-  loopAll() {
-    this.axles.forEach(a => a.active = !a.active);
-    this.state.pump = Math.min(this.state.pump + this.axles.filter(a=>a.active).length, 128);
-    this.log('♾ LOOP-ALL · orbit complete', 'ok');
-    this.sync(); // genau EIN sync()/render(), nicht mehr drei
-  },
+    for (const f of loops) {
+        const val = await loadFile(f);
+        html += `${f}: ${val ? val.trim() : "…" }<br>`;
+    }
 
-  resetAll() {
-    this.axles.forEach(a => a.active = false);
-    Object.assign(this.state, {
-      score: 1000, pump: 0, quote: 0.5, predict: 'IDLE', cpuJump: 0,
-      cpuBias: 'FORWARD', root: 0, achse: '0', tmp: 128, q: 27, d: 81, f: 243,
-      prefetchCount: 0, predictCount: 0, cacheCount: 0
-    });
-    this.memory = { hits: 0, misses: 0, slides: [], jumps: [] };
-    this.liveWindow = [['3','9'], ['27','81'], ['243','729']];
-    document.getElementById('consoleLog').innerHTML = '⏳ system zurückgesetzt...';
-    this.log('⟲ RESET · komplett neu', 'ok');
-    this.render();
-  },
+    document.getElementById("loopList").innerHTML = html;
+}
 
-  init() {
-    this.log('⭐ 3‑STERNE · GENERAL · PREFETCH · PREDICT · CACHE', 'ok');
-    this.log('📊 vereinheitlichte sync()-Logik für alle Aktionen', 'info');
-    this.render();
-    setInterval(() => {
-      if (this.axles.some(a => a.active)) this.pumpCycle();
-    }, 8000);
-  }
-};
+// ------------------------------------------------------------
+// USER.JSON
+// ------------------------------------------------------------
+async function loadUserJson() {
+    try {
+        const res = await fetch("user.json");
+        const data = await res.json();
+        document.getElementById("userJson").textContent =
+            JSON.stringify(data, null, 2);
+    } catch {
+        document.getElementById("userJson").textContent = "nicht verfügbar";
+    }
+}
 
-document.getElementById('btnGeneral').addEventListener('click', () => engine.runGeneral());
-document.getElementById('btnReset').addEventListener('click', () => engine.resetAll());
-document.getElementById('btnToggleAll').addEventListener('click', () => engine.toggleAll());
-document.getElementById('btnRandom').addEventListener('click', () => engine.randomize());
-document.getElementById('btnPump').addEventListener('click', () => engine.pumpCycle());
-document.getElementById('btnLoop').addEventListener('click', () => engine.loopAll());
+// ------------------------------------------------------------
+// INIT
+// ------------------------------------------------------------
+async function init() {
+    await loadStatus();
+    await loadTmp();
+    await loadLoops();
+    await loadUserJson();
+}
 
-engine.init();
-window.engine = engine;
+init();
 </script>
+
 </body>
 </html>
