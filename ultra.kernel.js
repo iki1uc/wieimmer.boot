@@ -28,6 +28,31 @@ class ULTRA_KERNEL {
         return out;
     }
 
+    // ───────────────────────────────────────────────
+    // Harmonisierte Predictive Engine
+    // ───────────────────────────────────────────────
+    predictiveEngine(active){
+        const pump = this.state.pump;
+
+        const jumpA = active + Math.floor(pump / 6);
+        const jumpB = active + Math.floor(pump / 8);
+
+        // Harmonie-Formel C
+        const jumpC = Math.floor((jumpA + jumpB) / 2 + (pump % 3) * 0.33);
+
+        this.state.cpuJump = jumpC;
+        this.memory.hits++;
+
+        this.log(`HARMONIE: A=${jumpA} B=${jumpB} C=${jumpC}`);
+
+        this.orbitFusion(jumpC);
+    }
+
+    orbitFusion(jump){
+        // Orbit-Fusion nutzt jetzt die harmonisierte Formel C
+        this.state.cpuJump = jump;
+    }
+
     sendToVector(matrix){
         if(window.VECTOR){
             VECTOR.receive9hoch9(matrix);
