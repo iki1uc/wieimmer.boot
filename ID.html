@@ -1,38 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>9hoch9 · ID · QI/IQQ/OCTA</title>
+<script type="module">
+import { NINEHOCH9 } from "./js/9^.js";
 
-<style>
-body { background:#000; color:#0f0; font-family:monospace; text-align:center; padding:40px; }
-#cube { width:360px; height:360px; margin:auto; position:relative; }
-.cell {
-    width:30px; height:30px;
-    background:#0f0; border:1px solid #333;
-    position:absolute;
-}
-</style>
-</head>
-
-<body>
-
-<h1>9hoch9 · ID · QI/IQQ/OCTA</h1>
-<div id="cube"></div>
-
-<script>
 const cube = document.getElementById("cube");
+const M = new NINEHOCH9();
+const data = M.build();
 
+let t = 0;
+
+// Zellen erzeugen
+const cells = [];
 for(let r=0; r<9; r++){
     for(let c=0; c<9; c++){
         const cell = document.createElement("div");
         cell.className = "cell";
-        cell.style.left = (c*40)+"px";
-        cell.style.top  = (r*40)+"px";
         cube.appendChild(cell);
+        cells.push({ el: cell, r, c });
     }
 }
-</script>
 
-</body>
-</html>
+// PRO‑CYLINDER
+function animate(){
+    t += 0.03;
+
+    // PRO‑Mechanik
+    const topSpin    = Math.sin(t*1.4) * 50;     // obere Drehung
+    const bottomSpin = Math.cos(t*1.4) * -50;    // untere Gegendrehung
+    const midPulse   = Math.sin(t*2.2) * 25;     // Luftdruck
+    const gearPull   = Math.sin(t*3.1) * 5;      // Zahnradsog
+
+    cube.style.transform =
+        `rotateX(${topSpin}deg) rotateY(${bottomSpin}deg) translateY(${midPulse}px)`;
+
+    // Zellen bewegen sich wie Zahnräder im Zylinder
+    cells.forEach((cell, i) => {
+        const qi   = M.qi(cell.r, cell.c);
+        const iqq  = M.iqq(cell.r, cell.c);
+        const octa = M.octaRoute(qi);
+
+        // Zylinder‑Rundung
+        const angle = (cell.c / 9) * Math.PI * 2;
+        const radius = 90 + Math.sin(t + cell.r*0.25)*12;
+
+        const x = Math.cos(angle) * radius;
+        const y = (cell.r * 40) - 160 + Math.sin(t*1.7 + qi*0.1)*gearPull;
+
+        cell.el.style.transform = `translate(${x}px, ${y}px)`;
+
+        // QI/IQQ‑Farbmodulation
+        const g = 50 + iqq*80;
+        cell.el.style.background = `rgb(0,${g},0)`;
+
+        // OCTA‑Highlight
+        if(octa === Math.floor((t*12)%8)){
+            cell.el.style.boxShadow = "0 0 14px #0f0";
+        } else {
+            cell.el.style.boxShadow = "none";
+        }
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
