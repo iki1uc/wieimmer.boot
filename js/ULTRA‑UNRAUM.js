@@ -1,7 +1,8 @@
 // ============================================================
 // ULTRA‑UNRAUM.js
-// Fusion aus ULTRA‑NC3×3.room + NC.math + PRE9×9 + Schabanak
-// Kontextsensitiv · 9hoch9-aware · Engine-aware · Visio-aware
+// Neuer Raum für wieimmer.boot
+// ersetzt N10–N90 dynamisch
+// 9hoch9-aware · index-aware · ID-aware
 // ============================================================
 
 import { SCHABANAK } from "./schabanak.fusion.js";
@@ -54,7 +55,7 @@ export const UNRAUM = {
         this.layer = 0;
     },
 
-    // Ableitung aus N10–N90 (ersetzt alte Raum‑Definition)
+    // Ableitung für N10–N90
     derive(n){
         const qi   = n % 9;
         const iqq  = n % 3;
@@ -71,7 +72,7 @@ export const UNRAUM = {
         };
     },
 
-    // PREFETCH‑Modus aus PRE9×9
+    // PREFETCH‑Modus
     prefetch(){
         if(this.context === "engine") return "ULTRA-U";
         if(this.context === "visio")  return "ULTRA-VISIO";
@@ -86,6 +87,15 @@ export const UNRAUM = {
         for(let n=10; n<=90; n+=10){
             out.push(this.derive(n));
         }
+
+        // M30 = Meta‑Raum
+        out.push({
+            N: "M30",
+            META: true,
+            RAW: this.prefetch(),
+            LAYER: this.layer,
+            CONTEXT: this.context
+        });
 
         return out;
     }
