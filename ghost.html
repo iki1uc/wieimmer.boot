@@ -2,25 +2,39 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ghost‑Scan</title>
+<title>Ghost‑Scan · Zeitlagen</title>
+
 <style>
   body { background:#000; color:#0ff; font-family:Arial; padding:20px; }
+  .ghostBox {
+      margin-top:20px;
+      padding:14px;
+      border:1px solid #0ff;
+      width:260px;
+      opacity:0.85;
+  }
+  .ghostBox span { color:#9ff; }
 </style>
 </head>
+
 <body>
 
-<h1>Ghost‑Scan – NC‑Zeitlagen‑Analyse</h1>
+<h1>Ghost‑Scan · NC‑Zeitlagen‑Analyse</h1>
 
-<p>Gestern → Heute</p>
-<p>Produktivität: <span id="prod"></span></p>
+<p>Gestern → Heute (NC‑Achsen)</p>
+
+<div class="ghostBox">
+  Produktivität: <span id="prod"></span><br>
+  Ghost‑Delta: <span id="ghost"></span><br>
+  Zeitlage: <span id="lage"></span>
+</div>
 
 <script>
+  // NC‑Achsen gestern/heute
   const gestern = { x:1, y:0, t:3, h:2, b:1, evo:"upg" };
   const heute   = { x:2, y:0, t:4, h:4, b:0, evo:"upd" };
 
-  const produktiv = ((heute.x+heute.t+heute.h) - (gestern.x+gestern.t+gestern.h)) * 3.2;
-  document.getElementById("prod").innerText = produktiv.toFixed(2) + "%";
-</script>
+  // Produktivität (sanft, system‑kompatibel)
+  const produktiv = ((heute.x + heute.t + heute.h) - (gestern.x + gestern.t + gestern.h)) * 3.2;
 
-</body>
-</html>
+  // Ghost
