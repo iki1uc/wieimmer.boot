@@ -1,868 +1,427 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚡ POVER ENERGY · MASTER.boot.block · 3‑9‑81 · REAL DATA</title>
-  <style>
-    /* ─── STYLES (unverändert) ─── */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background: #0a0a10;
-      color: #d0d8e8;
-      font-family: 'Consolas', 'Courier New', monospace;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(ellipse at 20% 50%, #0a0a20, #000000);
-    }
-    .container {
-      max-width: 1400px;
-      width: 100%;
-      background: rgba(10,10,20,0.3);
-      border: 1px solid rgba(0,204,255,0.05);
-      border-radius: 24px;
-      padding: 24px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 0 120px rgba(0,0,0,0.9);
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      border-bottom: 2px solid #ffd700;
-      padding-bottom: 10px;
-      margin-bottom: 24px;
-    }
-    .header h1 {
-      font-size: 28px;
-      background: linear-gradient(90deg, #ffaa00, #ff66ff, #00ccff, #00ff88);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 6px;
-    }
-    .header .sub { color: #556; font-size: 13px; letter-spacing: 2px; }
-    .user-badge {
-      background: #141a2a;
-      border: 1px solid #2a3a60;
-      border-radius: 40px;
-      padding: 6px 18px;
-      font-size: 13px;
-      color: #aabbdd;
-    }
-    .user-badge .name { color: #ffd700; }
-    .user-badge .lvl { color: #00ff88; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: rgba(10,10,20,0.4);
-      border: 1px solid rgba(255,255,255,0.02);
-      border-radius: 16px;
-      padding: 20px 24px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-    }
-    .card h2 {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      color: #7788aa;
-      border-bottom: 1px solid rgba(255,255,255,0.02);
-      padding-bottom: 6px;
-      margin-bottom: 14px;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.02);
-    }
-    .row .label { color: #445566; }
-    .row .value { font-weight: bold; color: #ffd700; }
-    .row .value.pulse { color: #ff66ff; }
-    .row .value.axiom { color: #00ccff; }
-
-    input[type="range"] {
-      width: 100%;
-      height: 4px;
-      -webkit-appearance: none;
-      background: #1a1a2a;
-      border-radius: 10px;
-      outline: none;
-      margin: 10px 0 6px;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
-      background: #ffd700;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 30px #ffd70044;
-    }
-    input[type="range"].depth::-webkit-slider-thumb {
-      background: #ff88ff;
-      box-shadow: 0 0 30px #ff88ff66;
-    }
-
-    .btn-group { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
-    .btn {
-      background: rgba(20,35,35,0.2);
-      color: #668888;
-      border: 1px solid rgba(255,255,255,0.02);
-      padding: 5px 14px;
-      border-radius: 30px;
-      font-family: inherit;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
-    }
-    .btn:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
-    .btn.primary { color: #ffd700; border-color: rgba(255,215,0,0.1); }
-    .btn.primary:hover { background: rgba(255,215,0,0.1); }
-    .btn.axiom { color: #ff66ff; border-color: rgba(255,102,255,0.05); }
-
-    .orbit-container {
-      position: relative;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      aspect-ratio: 1/1;
-      background: rgba(0,0,0,0.3);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.02);
-      overflow: hidden;
-    }
-    #orbitCanvas { width: 100%; height: 100%; display: block; }
-
-    .orbit-mini {
-      width: 100%;
-      max-width: 180px;
-      margin: 8px auto;
-      aspect-ratio: 1/1;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.02);
-    }
-    #orbitMiniCanvas { width: 100%; height: 100%; display: block; }
-
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      padding: 6px 14px;
-      margin-top: 12px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 8px;
-      font-size: 9px;
-      color: #445566;
-      border: 1px solid rgba(255,255,255,0.01);
-    }
-    .log-box {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.02);
-      border-radius: 12px;
-      padding: 12px 16px;
-      height: 140px;
-      overflow-y: auto;
-      font-size: 11px;
-      line-height: 1.6;
-      color: #7788aa;
-      font-family: inherit;
-    }
-    .log-box .hl { color: #ffd700; }
-    .log-box .ok { color: #00ff88; }
-
-    .footer {
-      text-align: center;
-      margin-top: 18px;
-      color: #222;
-      font-size: 8px;
-      letter-spacing: 2px;
-      border-top: 1px solid rgba(255,255,255,0.02);
-      padding-top: 14px;
-    }
-    .footer span { color: #ff66ff; }
-
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #06080c; }
-    ::-webkit-scrollbar-thumb { background: #2a3a60; border-radius: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3‑STERNE · GENERAL · PREFETCH · PREDICT · CACHE · VEREINHEITLICHT</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a12;color:#d0d9e6;font-family:'Consolas',monospace;padding:10px;min-height:100vh}
+        h1{text-align:center;letter-spacing:3px;font-weight:300;font-size:22px;background:linear-gradient(90deg,#ffd700,#00ccff,#ff66ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+        h1 small{font-size:10px;display:block;color:#3d5a70;-webkit-text-fill-color:#3d5a70;letter-spacing:2px}
+        .flex{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:3px 0}
+        .panel{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,200,255,0.08)}
+        .panel h3{font-size:10px;color:#3d5a70;letter-spacing:2px;margin-bottom:5px;text-transform:uppercase}
+        button{background:#0f0;color:#000;font-weight:bold;border:none;padding:4px 12px;border-radius:4px;font-family:monospace;font-size:10px;cursor:pointer}
+        button:hover{background:#0ff}
+        button.sec{background:transparent;color:#0f0;border:1px solid #0f0}
+        button.sec:hover{background:#0f0;color:#000}
+        button.gold{background:#ffd700;color:#000}
+        button.gold:hover{background:#ffaa00}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+        @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+        pre{background:rgba(0,0,0,0.4);padding:8px;border-radius:6px;border:1px solid rgba(0,200,255,0.05);font-size:9px;line-height:1.3;white-space:pre-wrap;color:#8ab4c8;margin:4px 0;max-height:120px;overflow:auto}
+        .badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:8px;margin:0 2px}
+        .badge.info{background:#0a1a2a;color:#66ccff}
+        .status-row{display:flex;flex-wrap:wrap;gap:6px;font-size:9px;margin:3px 0;color:#5a7a8a}
+        .status-row span{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:3px}
+        .console{background:#0a0a0a;padding:6px;border-radius:4px;font-size:7px;color:#3d5a70;max-height:80px;overflow-y:auto;border:1px solid #111}
+        .console .log-ok{color:#6bffa9}
+        .console .log-warn{color:#ffd700}
+        .console .log-info{color:#66ccff}
+        .console .log-err{color:#ff6b8a}
+        .matrix-3x2{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:4px 0}
+        .cell{background:#0a0a0a;padding:4px;text-align:center;font-size:8px;border:1px solid #111;border-radius:3px;color:#3d5a70}
+        .cell.active{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
+        .cell.gold{background:#2a1a0a;color:#ffd700;border-color:#ffd700}
+        .axle-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin:3px 0}
+        .axle-cell{background:#0a0a0a;padding:3px;text-align:center;font-size:7px;border:1px solid #111;border-radius:2px;color:#3d5a70;cursor:pointer}
+        .axle-cell.on{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
+        .axle-cell.off{background:#0a0a0a;color:#3d5a70}
+        .metric-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0}
+        .metric{background:#0a0a0a;padding:6px;border-radius:4px;text-align:center;border:1px solid #1a1a2a}
+        .metric .label{font-size:7px;color:#3d5a70;text-transform:uppercase}
+        .metric .value{font-size:16px;font-weight:bold;color:#6bffa9}
+        .metric .value.gold{color:#ffd700}
+        .metric .value.info{color:#66ccff}
+    </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div>
-      <h1>⚡ POVER ENERGY</h1>
-      <div class="sub">MASTER.boot.block · 3‑9‑81 · Harmonische Engine · REAL DATA</div>
-    </div>
-    <div class="user-badge">
-      <span class="name">🜁 Ridvan</span>  ·  <span class="lvl">Level 6</span>  ·  <span style="color:#00e5ff;">active</span>
-    </div>
-  </div>
+<h1>⭐ 3‑STERNE · GENERAL</h1>
+<h1 style="font-size:11px;margin-top:-2px;background:none;-webkit-text-fill-color:#3d5a70;color:#3d5a70;font-weight:400">PREFETCH · PREDICT · CACHE · VEREINHEITLICHTE LOGIK</h1>
 
-  <!-- GRID: Engine + Orbit-Mini -->
-  <div class="grid">
-    <div class="card">
-      <h2>⚡ ENGINE · HARMONIE</h2>
-      <div class="row"><span class="label">pump (Energie)</span><span class="value" id="pumpDisplay">0</span></div>
-      <input type="range" id="pumpSlider" min="0" max="100" value="0" step="1" />
-
-      <div class="row"><span class="label">81‑Tiefe (depth81)</span><span class="value" id="depthDisplay">1.0</span></div>
-      <input type="range" class="depth" id="depthSlider" min="0" max="20" value="10" step="1" />
-
-      <div class="row"><span class="label">Formel A (pump/6)</span><span class="value" id="jumpADisplay">0</span></div>
-      <div class="row"><span class="label">Formel B (pump/8)</span><span class="value" id="jumpBDisplay">0</span></div>
-      <div class="row"><span class="label" style="color:#ff88ff;">⚡ Formel C (Harmonie)</span><span class="value pulse" id="jumpCDisplay">0</span></div>
-      <div class="row"><span class="label">hits</span><span class="value" id="hitsDisplay">0</span></div>
-      <div class="row"><span class="label">USER‑Impuls</span><span class="value axiom" id="userImpulseDisplay">7</span></div>
-
-      <div class="btn-group">
-        <button class="btn primary" id="runEngineBtn">▶ predictiveEngine()</button>
-        <button class="btn" id="resetBtn">⟲ Reset</button>
-        <button class="btn axiom" id="proofBtn">🔮 PROOF</button>
-      </div>
-      <div style="font-size:10px; color:#445; margin-top:6px;">
-        DOOR: <span id="doorStateDisplay">✕</span> · DOO: <span id="dooStateDisplay">✕</span> · Achse: <span id="axleStateDisplay">neutral</span>
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h3>🎯 INDUSTRY · STEUERUNG</h3>
+      <div class="flex">
+        <button class="gold" id="btnGeneral">⚡ GENERAL RUN</button>
+        <button id="btnReset">⟲ RESET</button>
+        <button class="sec" id="btnToggleAll">🔄 ALL TOGGLE</button>
+        <button id="btnRandom">🎲 RANDOM</button>
+        <button id="btnPump">💨 PUMP</button>
+        <button id="btnLoop">♾ LOOP ALL</button>
       </div>
     </div>
 
-    <div class="card">
-      <h2>🌀 ORBIT · KOMPASS · RADAR (CXR_ORBIT live)</h2>
-      <div class="orbit-mini">
-        <canvas id="orbitMiniCanvas"></canvas>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#445;">
-        <span>Kompass: <span id="kompassDisplay" style="color:#ffd700;">—</span></span>
-        <span>Radar Ø: <span id="radarDisplay" style="color:#00e5ff;">—</span></span>
-        <span>Ghost: <span id="ghostDisplay" style="color:#ff88ff;">—</span></span>
-      </div>
-      <div class="btn-group">
-        <button class="btn" data-move="OI">OI</button>
-        <button class="btn" data-move="IO">IO</button>
-        <button class="btn" data-move="XI">XI</button>
-        <button class="btn" data-move="IX">IX</button>
-        <button class="btn" id="toggleAxleBtn">↕ Achse</button>
-        <button class="btn" id="doorBtn">🚪 DOOR</button>
-        <button class="btn" id="dooBtn">◈ DOO</button>
-      </div>
-      <div style="margin-top:6px; font-size:10px; color:#445;">
-        Move: <span id="lastMoveDisplay" style="color:#ffd700;">—</span>
-        · Orbit Ø-Level: <span id="orbitAvgDisplay">—</span>
+    <div class="panel">
+      <h3>🌀 9 ACHSEN · d e i n o r s u w</h3>
+      <div class="axle-grid" id="axleGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>🔷 PUMP · STATIONEN</h3>
+      <div class="flex" style="font-size:8px;color:#5a7a8a;gap:2px">
+        <span class="badge info">HY</span><span class="badge info">PE</span>
+        <span class="badge info">PER</span><span class="badge info">DA</span>
+        <span class="badge info">NE</span><span class="badge info">BEN</span>
+        <span class="badge info">TRANS</span><span class="badge info">WARB</span>
+        <span class="badge info">KANAL</span>
       </div>
     </div>
-  </div>
 
-  <!-- GROSSER ORBIT -->
-  <div class="card" style="margin-bottom:24px;">
-    <h2>🌌 3‑9‑81 ORBIT · MIND‑STELLE (Tiefe = depth81)</h2>
-    <div class="orbit-container">
-      <canvas id="orbitCanvas"></canvas>
+    <div class="panel">
+      <h3>📊 STATUS</h3>
+      <div class="status-row">
+        <span>SCORE: <span id="scoreVal" style="color:#ffd700">0</span></span>
+        <span>PUMP: <span id="pumpVal" style="color:#6bffa9">0</span></span>
+        <span>QUOTE: <span id="quoteVal" style="color:#66ccff">0%</span></span>
+        <span>PREDICT: <span id="predictVal" style="color:#ffd700">IDLE</span></span>
+      </div>
     </div>
-    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; font-size:11px; color:#667; margin-top:8px;">
-      <span>▣</span> <span style="color:#ffd700;">3</span> <span style="color:#00e5ff;">9</span>
-      <span style="color:#88ff88;">◎</span> <span style="color:#ff88ff;">81 ◆</span>
-      <span style="color:#ff8844;">△</span> <span style="color:#44aaff;">27</span> <span style="color:#ffd700;">3 ↺</span>
-      <span style="color:#ff88ff;">|</span> Echo: <span id="echoDisplay" style="color:#ffd700;">0</span>
-      Drift: <span id="driftDisplay" style="color:#00e5ff;">0</span>
-    </div>
-  </div>
 
-  <!-- FUSION + NAV -->
-  <div class="grid">
-    <div class="card">
-      <h2>🧬 FUSION · MOND‑DISTANZ (mit depth81‑Skalierung)</h2>
-      <div id="fusionContainer" style="font-size:11px; color:#88aacc; max-height:120px; overflow-y:auto;"></div>
-    </div>
-    <div class="card">
-      <h2>🧭 NAV9 · HYPERRAUM (echte AXES/GHOST)</h2>
-      <div id="navContainer" style="font-size:10px; color:#88aacc; max-height:120px; overflow-y:auto; display:grid; grid-template-columns:repeat(9,1fr); gap:2px;"></div>
+    <div class="panel">
+      <h3>📜 CONSOLE · LOG</h3>
+      <div class="console" id="consoleLog">⏳ system initialisiert...</div>
     </div>
   </div>
 
-  <!-- RÄUME + ULTRA_KERNEL STATUS -->
-  <div class="grid">
-    <div class="card">
-      <h2>🏛️ RÄUME · CORE / IN / OUT (aus ULTRA_KERNEL)</h2>
-      <div class="row"><span class="label">CORE (Ø)</span><span class="value" id="coreDisplay">0</span></div>
-      <div class="row"><span class="label">IN (Ø)</span><span class="value" id="inDisplay">0</span></div>
-      <div class="row"><span class="label">OUT (Ø)</span><span class="value" id="outDisplay">0</span></div>
-      <div class="row"><span class="label">LAGE.pos (Zelle 4,4)</span><span class="value axiom" id="lagePosDisplay">0</span></div>
+  <div>
+    <div class="panel">
+      <h3>📊 3 ANZEIGEN · PREFETCH · PREDICT · CACHE</h3>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="label">📦 PREFETCH</div>
+          <div class="value" id="prefetchCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">🧠 PREDICT</div>
+          <div class="value gold" id="predictCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">💾 CACHE</div>
+          <div class="value info" id="cacheCount">0</div>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h2>🧠 ULTRA_KERNEL · STATUS</h2>
-      <div class="row"><span class="label">Matrix</span><span class="value" id="kernelSizeDisplay">—</span></div>
-      <div class="row"><span class="label">Sample (Zelle 4,4)</span><span class="value axiom" id="kernelSampleDisplay">—</span></div>
-      <div class="row"><span class="label">Status</span><span class="value pulse" id="kernelStatusDisplay">inaktiv</span></div>
+
+    <div class="panel">
+      <h3>📊 3×2 PREFETCH · IKI1UC</h3>
+      <div class="matrix-3x2" id="prefetchGrid"></div>
     </div>
-  </div>
 
-  <!-- LOG -->
-  <div class="card">
-    <h2>📜 CHRONIK</h2>
-    <div class="log-box" id="logBox">[SYSTEM] POVER ENERGY (REAL DATA) geladen.</div>
-  </div>
+    <div class="panel">
+      <h3>📈 MASSNAHME · ERGEBNISSE</h3>
+      <pre id="resultDisplay">⏳ berechne...</pre>
+    </div>
 
-  <div class="footer">
-    <span>⚡</span> POVER ENERGY · MASTER.boot.block · wieimmer4u
+    <div class="panel">
+      <h3>❓ MYSTERY ACHSEN · Q / D / F</h3>
+      <div class="flex" style="font-size:8px;gap:6px">
+        <span>Q: <span id="qVal" style="color:#66ccff">0</span></span>
+        <span>D: <span id="dVal" style="color:#6bffa9">0</span></span>
+        <span>F: <span id="fVal" style="color:#ffd700">0</span></span>
+        <span style="color:#3d5a70">|</span>
+        <span>ROOT: <span id="rootVal" style="color:#6bffa9">0</span></span>
+        <span>ACHSE: <span id="achseVal" style="color:#66ccff">A</span></span>
+        <span>TMP: <span id="tmpVal" style="color:#ffd700">128</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🧠 CPU PREDICTIVE · SPRUNG</h3>
+      <div class="flex" style="font-size:8px;gap:6px">
+        <span>STATUS: <span id="cpuStatus" style="color:#6bffa9">ACTIVE</span></span>
+        <span>BIAS: <span id="cpuBias" style="color:#ffd700">FORWARD</span></span>
+        <span>SPRUNG: <span id="cpuJump" style="color:#ff6b8a">0</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🔄 3×2 FENSTER · LIVE</h3>
+      <div class="matrix-3x2" id="liveWindow"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════════
-// 0. ECHTE MODUL – DEFINITION (inline, ersetzt später die Repo‑Dateien)
-// ════════════════════════════════════════════════════════════════
+// ============================================================
+// IKI1UC · 3‑STERNE‑GENERAL · PREFETCH · PREDICT · CACHE
+// VEREINHEITLICHT: eine einzige Berechnungsfunktion (sync),
+// die JEDE Aktion aufruft — nicht nur LOOP ALL — und nur EIN
+// render() pro Klick.
+// ============================================================
+const engine = {
 
-// ─── AXES ──────────────────────────────────────────────────────
-window.AXES = {
-  qi(r, c)   { return ((r * 3 + c * 7 + 1) % 9) + 1; },
-  iqq(r, c)  { return ((r * 5 + c * 2 + 3) % 9) + 1; },
-  octa(r, c) { return ((r + c * 4 + 2) % 8) + 1; }
-};
-
-// ─── GHOST ──────────────────────────────────────────────────────
-window.GHOST = {
-  orbit(r, c)  { return (AXES.qi(r, c) + AXES.iqq(r, c) + r + c) % 12; },
-  status(r, c) { return this.orbit(r, c) > 5 ? "high" : "low"; }
-};
-
-// ─── LAGE ──────────────────────────────────────────────────────
-window.LAGE = {
-  pos(r, c) { return (AXES.qi(r, c) + AXES.iqq(r, c) + r * 3 + c * 3) % 81; }
-};
-
-// ─── RÄUME ──────────────────────────────────────────────────────
-window.XCORE = { map(r, c) { return (AXES.qi(r, c) * AXES.octa(r, c)) % 27; } };
-window.XIN   = { map(r, c) { return (r * 2 + AXES.iqq(r, c)) % 9; } };
-window.XOUT  = { map(r, c) { return (c * 2 + AXES.octa(r, c)) % 9; } };
-
-// ════════════════════════════════════════════════════════════════
-// 1. USER & ENGINE (mit Harmonie‑Formel C)
-// ════════════════════════════════════════════════════════════════
-const USER = { name: "Ridvan", level: 6, status: "active" };
-
-const Engine = {
-  state: { pump: 0, cpuJumpA: 0, cpuJumpB: 0, cpuJumpC: 0, active: 1, depth81: 1.0 },
-  memory: { hits: 0, logs: [] },
-
-  userImpulse() { return USER.level + this.state.active; },
-
-  predictiveEngine() {
-    const active = this.userImpulse();
-    const pump = this.state.pump;
-    const jumpA = active + Math.floor(pump / 6);
-    const jumpB = active + Math.floor(pump / 8);
-    const jumpC = Math.floor((jumpA + jumpB) / 2 + (pump % 3) * 0.33);
-
-    this.state.cpuJumpA = jumpA;
-    this.state.cpuJumpB = jumpB;
-    this.state.cpuJumpC = jumpC;
-    if (jumpC > 0) this.memory.hits++;
-
-    this.log(`HARMONIE: A=${jumpA} B=${jumpB} C=${jumpC}`);
-    return { A: jumpA, B: jumpB, C: jumpC };
+  state: {
+    score: 1000, pump: 0, quote: 0.5, predict: 'IDLE',
+    cpuJump: 0, cpuBias: 'FORWARD', root: 0, achse: 'A', tmp: 128,
+    q: 27, d: 81, f: 243,
+    prefetchCount: 0, predictCount: 0, cacheCount: 0
   },
 
-  orbitFusion(jump) {
-    // wird in predictiveEngine nicht mehr überschrieben – behält C
+  axles: 'deinorsuw'.split('').map(ch => ({ name: ch, active: false })),
+  stations: ['HY','PE','PER','DA','NE','BEN','TRANS','WARB','KANAL'],
+  prefetch: [[3, 9], [27, 81], [243, 729]],
+  liveWindow: [['3','9'], ['27','81'], ['243','729']],
+  memory: { hits: 0, misses: 0, slides: [], jumps: [] },
+
+  log(msg, type = 'info') {
+    const el = document.getElementById('consoleLog');
+    const t = new Date().toLocaleTimeString();
+    const cls = type === 'ok' ? 'log-ok' : type === 'warn' ? 'log-warn' : type === 'err' ? 'log-err' : 'log-info';
+    el.innerHTML += `<div class="${cls}">[${t}] ${msg}</div>`;
+    el.scrollTop = el.scrollHeight;
+    if (el.children.length > 30) el.removeChild(el.firstChild);
   },
 
-  pumpUp(value) { this.state.pump = Math.min(100, Math.max(0, value)); },
-  setDepth(value) { this.state.depth81 = Math.min(2.0, Math.max(0.0, value / 10)); },
+  // ============================================================
+  // ⭐ EINZIGE zentrale Berechnung — von JEDER Aktion aufgerufen.
+  // Keine zweite, abweichende Formel mehr an anderer Stelle.
+  // ============================================================
+  sync() {
+    const active = this.axles.filter(a => a.active).length;
+    const s = this.state;
 
-  reset() {
-    this.state.pump = 0; this.state.cpuJumpA = 0; this.state.cpuJumpB = 0; this.state.cpuJumpC = 0;
-    this.memory.hits = 0; this.memory.logs = [];
-    this.state.depth81 = 1.0;
-    this.log('⟲ Engine zurückgesetzt');
+    s.root = active;
+    s.achse = active > 0 ? String.fromCharCode(64 + active) : '0';
+    s.tmp = 128 - s.pump;
+
+    s.q = 3 * active + (s.pump % 7);
+    s.d = 9 * active + Math.floor(s.pump / 4);
+    s.f = 27 * active + Math.floor(s.pump / 2);
+
+    s.cpuJump = active + Math.floor(s.pump / 8);
+    s.cpuBias = s.quote > 0.6 ? 'FORWARD' : 'REVERSE';
+    s.predict = (active > 0 && s.quote > 0.4) ? 'ACTIVE' : 'IDLE';
+
+    // Trefferquote: EINE Regel, EINE Stelle
+    if (s.cpuJump > 0) {
+      this.memory.hits++;
+      s.predictCount++;
+      this.memory.slides.push(active);
+      this.memory.jumps.push(s.cpuJump);
+    } else {
+      this.memory.misses++;
+    }
+    s.quote = (this.memory.hits + 1) / (this.memory.hits + this.memory.misses + 2);
+
+    // Live-Fenster: EINE Formel
+    const vals = [3,9,27,81,243,729];
+    const shift = (s.root + s.pump + s.cpuJump) % 6;
+    this.liveWindow = [
+      [vals[(shift)%6], vals[(shift+1)%6]],
+      [vals[(shift+2)%6], vals[(shift+3)%6]],
+      [vals[(shift+4)%6], vals[(shift+5)%6]]
+    ];
+
+    // Metriken: laufen jetzt bei JEDER Aktion mit, nicht nur bei LOOP ALL
+    s.prefetchCount++;
+    if (s.tmp > 0) s.cacheCount++;
+
+    this.render(); // genau EIN Render pro sync()-Aufruf
   },
 
-  log(msg) { this.memory.logs.push(msg); updateUI(); }
-};
+  // ---------- RENDER ----------
+  render() {
+    this.renderAxles();
+    this.renderPrefetch();
+    this.renderLiveWindow();
+    this.updateStatus();
+    this.updateMystery();
+    this.updateCPU();
+    this.updateMetrics();
+    this.renderResult();
+  },
 
-// ════════════════════════════════════════════════════════════════
-// 2. ACHSEN / DOOR / DOO / AXLE
-// ════════════════════════════════════════════════════════════════
-let axleState = 0;
-let doorOpen = false;
-let dooActive = false;
-
-function toggleAxle() {
-  axleState = (axleState + 1) % 3;
-  const names = ['neutral', 'LAXIO (links)', 'RAXIO (rechts)'];
-  Engine.log(`Achse → ${names[axleState]}`);
-  updateUI();
-  drawOrbitMini(axleState, true);
-}
-function doorAction() { doorOpen = !doorOpen; Engine.log(`🚪 DOOR ${doorOpen?'geöffnet':'geschlossen'}`); updateUI(); }
-function dooAction() { dooActive = !dooActive; Engine.log(`◈ DOO ${dooActive?'aktiviert':'deaktiviert'}`); updateUI(); }
-
-// ════════════════════════════════════════════════════════════════
-// 3. CXR_ORBIT (Kompass + Radar + Pfad)
-// ════════════════════════════════════════════════════════════════
-class CXR_ORBIT {
-  compute(matrix) {
-    return matrix.map(row => row.map(cell => {
-      const orbitLevel = (cell.orbit + cell.qi + cell.iqq) % 12;
-      const orbitSpeed = (cell.octa * 3) % 100;
-      const orbitStatus = cell.orbit > 5 ? "HIGH" : "LOW";
-      const kompassAngle = (cell.qi * 40 + cell.iqq * 20 + cell.octa * 10) % 360;
-      const kompassDir = this.dirFromAngle(kompassAngle);
-      const radarScan = { ghost: cell.ghost, in: cell.in, out: cell.out, echo: (cell.ghost + cell.in + cell.out) % 9 };
-      const pfad = { level: orbitLevel, angle: kompassAngle, vector: [Math.cos(kompassAngle), Math.sin(kompassAngle)] };
-      return { ...cell, orbitLevel, orbitSpeed, orbitStatus, kompassAngle, kompassDir, radarScan, pfad };
-    }));
-  }
-  dirFromAngle(a) {
-    if (a < 45) return "N"; if (a < 90) return "NE"; if (a < 135) return "E";
-    if (a < 180) return "SE"; if (a < 225) return "S"; if (a < 270) return "SW";
-    if (a < 315) return "W"; return "NW";
-  }
-  sendToVector(data) { if (window.VECTOR) VECTOR.receiveOrbit(data); }
-  sendToALL(data) { if (window.ALL) ALL.receiveOrbit(data); }
-  start(matrix) { const data = this.compute(matrix); this.sendToVector(data); this.sendToALL(data); return data; }
-}
-window.CXR_ORBIT = new CXR_ORBIT();
-
-// ════════════════════════════════════════════════════════════════
-// 4. FUSION9 (Mond‑Distanz) – depth81 skaliert jetzt die Fusion
-// ════════════════════════════════════════════════════════════════
-class FUSION9 {
-  fuse(cells, depthFactor = 1) {
-    return cells.map(c => {
-      const shadow = (c.qi + c.iqq + c.octa + c.ghost) / 4;
-      const moon = Math.floor((shadow * depthFactor) % 33);
-      const sun = Math.floor((c.qi * 0.3 * depthFactor) % 12);
-      return { ...c, fusion: moon, reflection: sun, distance: shadow };
+  renderAxles() {
+    const grid = document.getElementById('axleGrid');
+    grid.innerHTML = '';
+    this.axles.forEach((a, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'axle-cell' + (a.active ? ' on' : ' off');
+      cell.textContent = a.name.toUpperCase();
+      cell.onclick = () => this.toggleAxle(i);
+      grid.appendChild(cell);
     });
-  }
-  render(list) {
-    const out = document.getElementById('fusionContainer');
-    out.innerHTML = list.slice(0, 25).map(c =>
-      `<div style="opacity:0.6; margin:4px 0; border-bottom:1px solid rgba(255,255,255,0.02);">
-        QI:${c.qi} IQQ:${c.iqq} O:${c.octa} G:${c.ghost} → Mond:${c.fusion}% Sonne:${c.reflection}%
-      </div>`
-    ).join('');
-  }
-}
-window.FUSION9 = new FUSION9();
+  },
 
-// ════════════════════════════════════════════════════════════════
-// 5. NAV9 (Hyperraum‑Navigator) – jetzt mit echten AXES
-// ════════════════════════════════════════════════════════════════
-class NAV9 {
-  safe(fn, r, c, fallback = 0) { try { return fn(r, c); } catch { return fallback; } }
-  build() {
-    const raw = window.NC9X9 || Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
-    return raw.map((row, r) => row.map((cell, c) => {
-      const qi = this.safe((r,c)=>AXES.qi(r,c), r, c);
-      const iqq = this.safe((r,c)=>AXES.iqq(r,c), r, c);
-      const octa = this.safe((r,c)=>AXES.octa(r,c), r, c);
-      const ghost = this.safe((r,c)=>GHOST.orbit(r,c), r, c);
-      const core = this.safe((r,c)=>XCORE.map(r,c), r, c);
-      const inn = this.safe((r,c)=>XIN.map(r,c), r, c);
-      const out = this.safe((r,c)=>XOUT.map(r,c), r, c);
-      const mystery = (qi + iqq + octa) % 9;
-      return { r, c, qi, iqq, octa, ghost, core, in: inn, out, value: cell, mystery };
+  renderPrefetch() {
+    const grid = document.getElementById('prefetchGrid');
+    grid.innerHTML = '';
+    this.prefetch.forEach(row => row.forEach(val => {
+      const cell = document.createElement('div');
+      cell.className = 'cell active';
+      cell.textContent = val;
+      grid.appendChild(cell);
     }));
-  }
-  render(matrix) {
-    const out = document.getElementById('navContainer');
-    out.innerHTML = matrix.flat().map(c =>
-      `<div style="background:rgba(255,255,255,0.02); padding:2px; border-radius:4px; text-align:center; font-size:8px;">
-        ${c.value}<br><span style="color:#ffd700;">${c.qi}</span> <span style="color:#00e5ff;">${c.iqq}</span>
-      </div>`
-    ).join('');
-  }
-}
-window.NAV9 = new NAV9();
+  },
 
-// ════════════════════════════════════════════════════════════════
-// 6. GHOST5E / LAGE / RESPO (eigenständig)
-// ════════════════════════════════════════════════════════════════
-function ghost5E(Phi, phi, phi2, phiinfty) {
-  const orbit = { speed: Phi * 2, radius: phi * 3, evo: phi2 * phiinfty, uiSpeed: Math.min(Phi * 2, 120) };
-  const operatoren = { bewegung: Phi + phi, stabilitaet: phi2 - phi, raster: Phi * phi2 };
-  const status = (Phi + phi + phi2 + phiinfty) > 2 ? "aktiv" : "ruhig";
-  const erinnerung = { lastPhi: Phi, lastPhi2: phi2, lastOrbit: orbit.evo, uiGhost: (Phi + phi2) % 9 };
-  return { orbit, operatoren, status, erinnerung };
-}
-function computeLAGE(Phi, phi, phi2, phiinfty) {
-  const mini = { x: Phi * 10, y: phi * 10, z: phiinfty * 10, stabil: phi2, echo: (Phi + phi) % 9 };
-  const maxi = { x: Phi * 81, y: phi * 81, z: phiinfty * 81, stabil: phi2 * 9, horizon: (Phi + phi2 + phiinfty) % 81 };
-  const mystery = { drift: (Phi * 0.33 + phi2 * 0.11).toFixed(2), ghost: (phiinfty + phi) % 7, trace: ((Phi + phi + phi2 + phiinfty) / 4).toFixed(2) };
-  return { mini, maxi, mystery };
-}
+  renderLiveWindow() {
+    const grid = document.getElementById('liveWindow');
+    grid.innerHTML = '';
+    this.liveWindow.forEach(row => row.forEach(val => {
+      const cell = document.createElement('div');
+      cell.className = 'cell gold';
+      cell.textContent = val;
+      grid.appendChild(cell);
+    }));
+  },
 
-// ════════════════════════════════════════════════════════════════
-// 7. ULTRA_KERNEL – jetzt mit Fehler‑Absicherung (kein Crash)
-// ════════════════════════════════════════════════════════════════
-class ULTRA_KERNEL {
-  build() {
-    const raw = window.NC9X9 || Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
-    return raw.map((row, r) => row.map((cell, c) => {
-      try {
-        return {
-          r, c, val: cell,
-          qi: AXES.qi(r,c),
-          iqq: AXES.iqq(r,c),
-          octa: AXES.octa(r,c),
-          orbit: GHOST.orbit(r,c),
-          lage: LAGE.pos(r,c),
-          core: XCORE.map(r,c),
-          in: XIN.map(r,c),
-          out: XOUT.map(r,c)
-        };
-      } catch {
-        return { r, c, val: cell, qi:0, iqq:0, octa:0, orbit:0, lage:0, core:0, in:0, out:0 };
+  updateStatus() {
+    document.getElementById('scoreVal').textContent = this.state.score;
+    document.getElementById('pumpVal').textContent = this.state.pump;
+    document.getElementById('quoteVal').textContent = Math.round(this.state.quote * 100) + '%';
+    document.getElementById('predictVal').textContent = this.state.predict;
+  },
+
+  updateMystery() {
+    document.getElementById('qVal').textContent = this.state.q;
+    document.getElementById('dVal').textContent = this.state.d;
+    document.getElementById('fVal').textContent = this.state.f;
+    document.getElementById('rootVal').textContent = this.state.root;
+    document.getElementById('achseVal').textContent = this.state.achse;
+    document.getElementById('tmpVal').textContent = this.state.tmp;
+  },
+
+  updateCPU() {
+    document.getElementById('cpuStatus').textContent = this.state.predict === 'ACTIVE' ? 'ACTIVE' : 'IDLE';
+    document.getElementById('cpuBias').textContent = this.state.cpuBias;
+    document.getElementById('cpuJump').textContent = this.state.cpuJump;
+  },
+
+  updateMetrics() {
+    document.getElementById('prefetchCount').textContent = this.state.prefetchCount;
+    document.getElementById('predictCount').textContent = this.state.predictCount;
+    document.getElementById('cacheCount').textContent = this.state.cacheCount;
+  },
+
+  renderResult() {
+    const el = document.getElementById('resultDisplay');
+    const active = this.axles.filter(a => a.active).length;
+    const s = this.state;
+    el.textContent =
+`MASSNAHME · IKI1UC
+─────────────────
+aktive Achsen : ${active} / 9
+Pump-Stack    : ${s.pump} / 128
+Trefferquote  : ${Math.round(s.quote*100)}%
+Predict       : ${s.predict}
+Sprung        : ${s.cpuJump}
+Bias          : ${s.cpuBias}
+ROOT          : ${s.root}
+ACHSE         : ${s.achse}
+TMP           : ${s.tmp}
+Q:${s.q}  D:${s.d}  F:${s.f}
+PREFETCH:${s.prefetchCount}  PREDICT:${s.predictCount}  CACHE:${s.cacheCount}`;
+  },
+
+  // ============================================================
+  // ⭐ AKTIONEN — verändern nur pump/score/axles, rufen danach
+  // genau EINMAL sync() auf. Keine eigene Predict-/Metrik-Logik
+  // mehr in den einzelnen Aktionen.
+  // ============================================================
+  toggleAxle(i) {
+    this.axles[i].active = !this.axles[i].active;
+    this.log(`achse ${this.axles[i].name} → ${this.axles[i].active ? 'ON' : 'OFF'}`, 'info');
+    this.sync();
+  },
+
+  pumpCycle() {
+    const active = this.axles.filter(a => a.active).length;
+    if (active === 0) {
+      this.log('❗ keine achse aktiv — pump gestoppt', 'err');
+      return;
+    }
+    this.stations.forEach((st, i) => {
+      if ((this.state.pump + i) % 3 === 0) {
+        this.log(`🔷 STATION ${st} → BOOST`, 'ok');
+        this.state.score += (active * (i + 1));
       }
-    }));
-  }
-  sendToVector(matrix) { if (window.VECTOR) VECTOR.receive9hoch9(matrix); }
-  sendToALL(matrix) { if (window.ALL) ALL.receive9hoch9(matrix); }
-  start() {
-    const matrix = this.build();
-    this.sendToVector(matrix);
-    this.sendToALL(matrix);
-    document.getElementById('kernelStatusDisplay').textContent = 'aktiv';
-    return matrix;
-  }
-}
-window.ULTRA_KERNEL = new ULTRA_KERNEL();
-
-// ════════════════════════════════════════════════════════════════
-// 8. PIPE12 – Master‑Pipeline (orchestriert jetzt alles)
-// ════════════════════════════════════════════════════════════════
-class PIPE12 {
-  run(Phi, phi, phi2, phiinfty) {
-    const kernelMatrix = ULTRA_KERNEL.build();
-    const navMatrix = NAV9.build();
-    const axes = { Phi, phi, phi2, phiinfty, bewegung: Phi + phi };
-    const ghost = ghost5E(Phi, phi, phi2, phiinfty);
-    const lage = computeLAGE(Phi, phi, phi2, phiinfty);
-    const orbit = CXR_ORBIT.start(kernelMatrix);
-    const fusion = FUSION9.fuse(navMatrix.flat(), phiinfty);
-    return { axes, ghost, lage, orbit, fusion, nav: navMatrix, kernel: kernelMatrix };
-  }
-}
-window.PIPE12 = new PIPE12();
-
-// ════════════════════════════════════════════════════════════════
-// 9. ORBIT ZEICHNEN – depth81 skaliert jetzt den Orbit‑Radius
-// ════════════════════════════════════════════════════════════════
-const orbitCanvas = document.getElementById('orbitCanvas');
-const orbitCtx = orbitCanvas.getContext('2d');
-const miniCanvas = document.getElementById('orbitMiniCanvas');
-const miniCtx = miniCanvas.getContext('2d');
-
-function resizeOrbitCanvases() {
-  const rect = orbitCanvas.parentElement.getBoundingClientRect();
-  const size = Math.min(rect.width, rect.height, 600);
-  orbitCanvas.width = size; orbitCanvas.height = size;
-  const miniRect = miniCanvas.parentElement.getBoundingClientRect();
-  const miniSize = Math.min(miniRect.width, miniRect.height, 180);
-  miniCanvas.width = miniSize; miniCanvas.height = miniSize;
-}
-window.addEventListener('resize', resizeOrbitCanvases);
-
-function drawOrbitMain(t) {
-  const w = orbitCanvas.width, h = orbitCanvas.height;
-  const cx = w/2, cy = h/2;
-  // depth81 (0..2) skaliert den Radius (0.6x .. 1.4x)
-  const depthScale = 0.6 + Math.min(2, Math.max(0, Engine.state.depth81)) * 0.4;
-  const r = Math.min(w,h)*0.38*depthScale;
-
-  orbitCtx.clearRect(0,0,w,h);
-  orbitCtx.fillStyle = '#0a0b10';
-  orbitCtx.fillRect(0,0,w,h);
-
-  const axesCount = Math.min(1500, Engine.state.pump * 10);
-  for (let i=0; i<axesCount; i++) {
-    const angle = (i/axesCount)*Math.PI*2 + t*0.001;
-    const dist = (80 + (i/axesCount)*100) * depthScale;
-    const x = cx + Math.cos(angle)*dist;
-    const y = cy + Math.sin(angle)*dist;
-    const alpha = 0.02 + (i/axesCount)*0.04;
-    orbitCtx.fillStyle = `rgba(255,215,0,${alpha})`;
-    orbitCtx.beginPath();
-    orbitCtx.arc(x, y, 1+(i/axesCount)*2, 0, Math.PI*2);
-    orbitCtx.fill();
-  }
-
-  const nodes = [
-    { id:'3', angle:-90, color:'#ffd700' }, { id:'9', angle:-45, color:'#00e5ff' },
-    { id:'◎', angle:0, color:'#88ff88' }, { id:'81', angle:45, color:'#ff88ff' },
-    { id:'◆', angle:90, color:'#ff88ff' }, { id:'△', angle:135, color:'#ff8844' },
-    { id:'27', angle:180, color:'#44aaff' }, { id:'▣', angle:225, color:'#aaaaaa' }
-  ];
-  const path = ['3','9','◎','81','◆','△','27','▣','3'];
-  orbitCtx.strokeStyle = '#2a3a60';
-  orbitCtx.lineWidth = 1.5;
-  orbitCtx.beginPath();
-  for (let i=0; i<path.length-1; i++) {
-    const from = nodes.find(n=>n.id===path[i]);
-    const to = nodes.find(n=>n.id===path[i+1]);
-    if (from&&to) {
-      const ax = cx + r*Math.cos(from.angle*Math.PI/180);
-      const ay = cy + r*Math.sin(from.angle*Math.PI/180);
-      const bx = cx + r*Math.cos(to.angle*Math.PI/180);
-      const by = cy + r*Math.sin(to.angle*Math.PI/180);
-      orbitCtx.moveTo(ax,ay); orbitCtx.lineTo(bx,by);
-    }
-  }
-  orbitCtx.stroke();
-
-  nodes.forEach((node, idx) => {
-    const x = cx + r*Math.cos(node.angle*Math.PI/180);
-    const y = cy + r*Math.sin(node.angle*Math.PI/180);
-    const isHighlight = (idx === Math.floor(Engine.state.pump/12) % nodes.length);
-    orbitCtx.beginPath();
-    orbitCtx.arc(x, y, isHighlight?14:10, 0, 2*Math.PI);
-    orbitCtx.fillStyle = isHighlight ? '#ffd70033' : '#1a224066';
-    orbitCtx.fill();
-    orbitCtx.strokeStyle = isHighlight ? '#ffd700' : node.color;
-    orbitCtx.lineWidth = isHighlight?2.5:1.2;
-    orbitCtx.stroke();
-    orbitCtx.fillStyle = node.color;
-    orbitCtx.font = 'bold 18px monospace';
-    orbitCtx.textAlign='center'; orbitCtx.textBaseline='middle';
-    orbitCtx.fillText(node.id, x, y);
-  });
-
-  const echo = (Engine.state.pump + Engine.state.cpuJumpC) % 9;
-  const drift = ((Engine.state.pump + Engine.state.cpuJumpC) * 0.01).toFixed(2);
-  const trace = ((Engine.state.pump + Engine.state.cpuJumpC) / 4).toFixed(2);
-  orbitCtx.fillStyle = '#9ff';
-  orbitCtx.font = '12px Consolas';
-  orbitCtx.textAlign='left'; orbitCtx.textBaseline='bottom';
-  orbitCtx.fillText(`Echo: ${echo}`, 12, h-12);
-  orbitCtx.fillText(`Drift: ${drift}`, 12, h-30);
-  orbitCtx.fillText(`Trace: ${trace}`, 12, h-48);
-  document.getElementById('echoDisplay').textContent = echo;
-  document.getElementById('driftDisplay').textContent = drift;
-}
-
-function drawOrbitMini(highlight=0, showAxle=false) {
-  const w = miniCanvas.width, h = miniCanvas.height;
-  const cx = w/2, cy = h/2, r = Math.min(w,h)*0.38;
-  miniCtx.clearRect(0,0,w,h);
-  miniCtx.fillStyle = '#0a0b10';
-  miniCtx.fillRect(0,0,w,h);
-  const nodes = [
-    { id:'3', angle:-90, color:'#ffd700' }, { id:'9', angle:-45, color:'#00e5ff' },
-    { id:'◎', angle:0, color:'#88ff88' }, { id:'81', angle:45, color:'#ff88ff' },
-    { id:'◆', angle:90, color:'#ff88ff' }, { id:'△', angle:135, color:'#ff8844' },
-    { id:'27', angle:180, color:'#44aaff' }, { id:'▣', angle:225, color:'#aaaaaa' }
-  ];
-  const path = ['3','9','◎','81','◆','△','27','▣','3'];
-  miniCtx.strokeStyle = '#2a3a60';
-  miniCtx.lineWidth = 1.2;
-  miniCtx.beginPath();
-  for (let i=0; i<path.length-1; i++) {
-    const from = nodes.find(n=>n.id===path[i]);
-    const to = nodes.find(n=>n.id===path[i+1]);
-    if (from&&to) {
-      const ax = cx + r*Math.cos(from.angle*Math.PI/180);
-      const ay = cy + r*Math.sin(from.angle*Math.PI/180);
-      const bx = cx + r*Math.cos(to.angle*Math.PI/180);
-      const by = cy + r*Math.sin(to.angle*Math.PI/180);
-      miniCtx.moveTo(ax,ay); miniCtx.lineTo(bx,by);
-    }
-  }
-  miniCtx.stroke();
-  nodes.forEach((node, idx) => {
-    const x = cx + r*Math.cos(node.angle*Math.PI/180);
-    const y = cy + r*Math.sin(node.angle*Math.PI/180);
-    const isHighlight = (idx === highlight % nodes.length);
-    miniCtx.beginPath();
-    miniCtx.arc(x, y, isHighlight?9:6, 0, 2*Math.PI);
-    miniCtx.fillStyle = isHighlight ? '#ffd70033' : '#1a224066';
-    miniCtx.fill();
-    miniCtx.strokeStyle = isHighlight ? '#ffd700' : node.color;
-    miniCtx.lineWidth = isHighlight?2:1;
-    miniCtx.stroke();
-    miniCtx.fillStyle = node.color;
-    miniCtx.font = 'bold 9px monospace';
-    miniCtx.textAlign='center'; miniCtx.textBaseline='middle';
-    miniCtx.fillText(node.id, x, y);
-  });
-  if (showAxle && axleState===1) { miniCtx.fillStyle='#ffd70044'; miniCtx.font='8px monospace'; miniCtx.fillText('← LAXIO', 8, 16); }
-  else if (showAxle && axleState===2) { miniCtx.fillStyle='#00e5ff44'; miniCtx.font='8px monospace'; miniCtx.fillText('RAXIO →', w-48, 16); }
-}
-
-// ════════════════════════════════════════════════════════════════
-// 10. UI‑UPDATE (alle echten Daten aus den Modulen)
-// ════════════════════════════════════════════════════════════════
-function updateUI() {
-  document.getElementById('pumpDisplay').textContent = Engine.state.pump;
-  document.getElementById('jumpADisplay').textContent = Engine.state.cpuJumpA;
-  document.getElementById('jumpBDisplay').textContent = Engine.state.cpuJumpB;
-  document.getElementById('jumpCDisplay').textContent = Engine.state.cpuJumpC;
-  document.getElementById('hitsDisplay').textContent = Engine.memory.hits;
-  document.getElementById('userImpulseDisplay').textContent = Engine.userImpulse();
-  document.getElementById('depthDisplay').textContent = Engine.state.depth81.toFixed(1);
-  document.getElementById('doorStateDisplay').textContent = doorOpen ? '✔' : '✕';
-  document.getElementById('dooStateDisplay').textContent = dooActive ? '✔' : '✕';
-  const axleNames = ['neutral', 'LAXIO', 'RAXIO'];
-  document.getElementById('axleStateDisplay').textContent = axleNames[axleState];
-
-  const logBox = document.getElementById('logBox');
-  const logs = Engine.memory.logs.slice(-20);
-  logBox.innerHTML = logs.map(l => `<div>${l}</div>`).join('');
-  logBox.scrollTop = logBox.scrollHeight;
-}
-
-// ════════════════════════════════════════════════════════════════
-// 11. EVENT BINDINGS & START
-// ════════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  resizeOrbitCanvases();
-
-  const pumpSlider = document.getElementById('pumpSlider');
-  const depthSlider = document.getElementById('depthSlider');
-
-  pumpSlider.addEventListener('input', function() {
-    Engine.pumpUp(parseInt(this.value));
-    updateUI();
-    drawOrbitMain(Date.now());
-  });
-
-  depthSlider.addEventListener('input', function() {
-    Engine.setDepth(parseInt(this.value));
-    // depth81 beeinflusst sofort den Orbit (neuzeichnen)
-    drawOrbitMain(Date.now());
-    updateUI();
-  });
-
-  // ─── DER ENGINE‑RUN – jetzt mit echter Pipeline ───
-  document.getElementById('runEngineBtn').addEventListener('click', function() {
-    // 1) Engine berechnen
-    const result = Engine.predictiveEngine();
-    Engine.log(`Engine: A=${result.A} B=${result.B} C=${result.C}`);
-
-    // 2) Parameter für die Module ableiten
-    const Phi = Engine.state.pump / 20;
-    const phi = result.A / 10;
-    const phi2 = result.B / 10;
-    const phiinfty = Engine.state.depth81;
-
-    // 3) PIPE12 orchestriert alles – echte Daten
-    const data = PIPE12.run(Phi, phi, phi2, phiinfty);
-
-    // 4) ULTRA_KERNEL starten und Status setzen
-    ULTRA_KERNEL.start();
-
-    // 5) FUSION rendern (echte NAV‑Zellen, skaliert mit depth81)
-    FUSION9.render(data.fusion);
-
-    // 6) NAV rendern (echte AXES/GHOST)
-    NAV9.render(data.nav);
-
-    // 7) CXR_ORBIT‑Daten in die UI schieben (Kompass/Radar/Ghost)
-    const flatOrbit = data.orbit.flat();
-    const avgLevel = flatOrbit.reduce((s,c)=>s+c.orbitLevel,0)/flatOrbit.length;
-    const avgEcho = flatOrbit.reduce((s,c)=>s+c.radarScan.echo,0)/flatOrbit.length;
-    const center = data.orbit[4][4];
-    document.getElementById('kompassDisplay').textContent = center.kompassDir;
-    document.getElementById('radarDisplay').textContent = avgEcho.toFixed(1);
-    document.getElementById('ghostDisplay').textContent = center.radarScan.ghost;
-    document.getElementById('orbitAvgDisplay').textContent = avgLevel.toFixed(1);
-
-    // 8) Räume (CORE/IN/OUT) aus dem Kernel aktualisieren
-    const flatKernel = data.kernel.flat();
-    const avgCore = flatKernel.reduce((s,c)=>s+c.core,0)/flatKernel.length;
-    const avgIn = flatKernel.reduce((s,c)=>s+c.in,0)/flatKernel.length;
-    const avgOut = flatKernel.reduce((s,c)=>s+c.out,0)/flatKernel.length;
-    document.getElementById('coreDisplay').textContent = avgCore.toFixed(1);
-    document.getElementById('inDisplay').textContent = avgIn.toFixed(1);
-    document.getElementById('outDisplay').textContent = avgOut.toFixed(1);
-    document.getElementById('lagePosDisplay').textContent = data.kernel[4][4].lage;
-    document.getElementById('kernelSizeDisplay').textContent = `${data.kernel.length}×${data.kernel[0].length}`;
-    const sample = data.kernel[4][4];
-    document.getElementById('kernelSampleDisplay').textContent = `qi:${sample.qi} iqq:${sample.iqq} o:${sample.octa}`;
-
-    Engine.log(`PIPE12: Fusion(${data.fusion.length}) NAV(${data.nav.flat().length}) Kernel(${data.kernel.flat().length})`);
-    updateUI();
-    drawOrbitMain(Date.now());
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', function() {
-    Engine.reset();
-    pumpSlider.value = 0; depthSlider.value = 10;
-    axleState = 0; doorOpen = false; dooActive = false;
-    document.getElementById('lastMoveDisplay').textContent = '—';
-    document.getElementById('kompassDisplay').textContent = '—';
-    document.getElementById('radarDisplay').textContent = '—';
-    document.getElementById('ghostDisplay').textContent = '—';
-    document.getElementById('orbitAvgDisplay').textContent = '—';
-    document.getElementById('kernelStatusDisplay').textContent = 'inaktiv';
-    document.getElementById('kernelSizeDisplay').textContent = '—';
-    document.getElementById('kernelSampleDisplay').textContent = '—';
-    updateUI();
-    drawOrbitMain(Date.now());
-    drawOrbitMini(0);
-    document.getElementById('fusionContainer').innerHTML = '';
-    document.getElementById('navContainer').innerHTML = '';
-  });
-
-  document.getElementById('proofBtn').addEventListener('click', function() {
-    alert(`⚡ POVER ENERGY PROOF\npump: ${Engine.state.pump}\nA: ${Engine.state.cpuJumpA}\nB: ${Engine.state.cpuJumpB}\nC: ${Engine.state.cpuJumpC}\nhits: ${Engine.memory.hits}\ndepth81: ${Engine.state.depth81}`);
-  });
-
-  document.querySelectorAll('[data-move]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const move = this.dataset.move;
-      document.getElementById('lastMoveDisplay').textContent = move;
-      Engine.log(`Move: ${move}`);
-      const idx = ['OI','IO','XI','IX'].indexOf(move) + 1;
-      drawOrbitMini(idx % 8);
-      updateUI();
     });
-  });
+    this.state.pump = Math.min(this.state.pump + active, 128);
+    this.state.score += active * 2;
+    this.log(`💨 PUMP · stack=${this.state.pump}`, 'ok');
+    this.sync();
+  },
 
-  document.getElementById('toggleAxleBtn').addEventListener('click', toggleAxle);
-  document.getElementById('doorBtn').addEventListener('click', doorAction);
-  document.getElementById('dooBtn').addEventListener('click', dooAction);
+  runGeneral() {
+    this.axles.forEach(a => a.active = true);
+    for (let i = 0; i < 3; i++) {
+      this.state.pump = Math.min(this.state.pump + 9, 128);
+      this.state.score += 9 * 2;
+    }
+    this.state.score += 50;
+    this.log('⚡ GENERAL RUN · alles aktiv · score+50', 'ok');
+    this.sync();
+  },
 
-  // Initialzeichnung
-  drawOrbitMain(Date.now());
-  drawOrbitMini(0);
-  updateUI();
-  Engine.log('⚡ POVER ENERGY gestartet – echte Module aktiv (AXES/GHOST/LAGE/XCORE/XIN/XOUT)');
-  updateUI();
-});
+  toggleAll() {
+    const allOn = this.axles.every(a => a.active);
+    this.axles.forEach(a => a.active = !allOn);
+    this.log(`🔄 ALL TOGGLE → ${allOn ? 'OFF' : 'ON'}`, 'info');
+    this.sync();
+  },
 
-// ─── ANIMATION ──────────────────────────────────────────────────
-function animate() {
-  drawOrbitMain(Date.now());
-  requestAnimationFrame(animate);
-}
-animate();
+  randomize() {
+    this.axles.forEach(a => a.active = Math.random() > 0.5);
+    this.state.score = Math.floor(Math.random() * 500) + 500;
+    this.state.pump = Math.floor(Math.random() * 30);
+    this.log('🎲 RANDOM · neuer zustand', 'warn');
+    this.sync();
+  },
 
-// ─── TASTATUR ──────────────────────────────────────────────────
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('runEngineBtn').click();
-  if (e.key === 'r') document.getElementById('resetBtn').click();
-  if (e.key === 't') toggleAxle();
-  if (e.key === 'd') doorAction();
-  if (e.key === 'o') dooAction();
-  if (e.key === ' ') { e.preventDefault(); document.getElementById('runEngineBtn').click(); }
-});
+  loopAll() {
+    this.axles.forEach(a => a.active = !a.active);
+    this.state.pump = Math.min(this.state.pump + this.axles.filter(a=>a.active).length, 128);
+    this.log('♾ LOOP-ALL · orbit complete', 'ok');
+    this.sync(); // genau EIN sync()/render(), nicht mehr drei
+  },
 
-console.log('⚡ POVER ENERGY (REAL DATA) geladen – alle 8 Punkte korrigiert');
+  resetAll() {
+    this.axles.forEach(a => a.active = false);
+    Object.assign(this.state, {
+      score: 1000, pump: 0, quote: 0.5, predict: 'IDLE', cpuJump: 0,
+      cpuBias: 'FORWARD', root: 0, achse: '0', tmp: 128, q: 27, d: 81, f: 243,
+      prefetchCount: 0, predictCount: 0, cacheCount: 0
+    });
+    this.memory = { hits: 0, misses: 0, slides: [], jumps: [] };
+    this.liveWindow = [['3','9'], ['27','81'], ['243','729']];
+    document.getElementById('consoleLog').innerHTML = '⏳ system zurückgesetzt...';
+    this.log('⟲ RESET · komplett neu', 'ok');
+    this.render();
+  },
+
+  init() {
+    this.log('⭐ 3‑STERNE · GENERAL · PREFETCH · PREDICT · CACHE', 'ok');
+    this.log('📊 vereinheitlichte sync()-Logik für alle Aktionen', 'info');
+    this.render();
+    setInterval(() => {
+      if (this.axles.some(a => a.active)) this.pumpCycle();
+    }, 8000);
+  }
+};
+
+document.getElementById('btnGeneral').addEventListener('click', () => engine.runGeneral());
+document.getElementById('btnReset').addEventListener('click', () => engine.resetAll());
+document.getElementById('btnToggleAll').addEventListener('click', () => engine.toggleAll());
+document.getElementById('btnRandom').addEventListener('click', () => engine.randomize());
+document.getElementById('btnPump').addEventListener('click', () => engine.pumpCycle());
+document.getElementById('btnLoop').addEventListener('click', () => engine.loopAll());
+
+engine.init();
+window.engine = engine;
 </script>
 </body>
 </html>
