@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>9hoch9 · ULTRA · Orbit · Pipeline12</title>
+
+<style>
+body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
+.box { background:#111; padding:20px; margin:20px 0; border-left:3px solid #6cf; }
+</style>
+
+<script src="9×9.js"></script>
+<script src="axes.js"></script>
+<script src="lage.js"></script>
+<script src="ghost.js"></script>
+<script src="respo_bridge.js"></script>
+<script src="tmp.js"></script>
+
+<script src="ultra.kernel.js"></script>
+<script src="cxr.orbit.js"></script>
+<script src="pipeline12.master.js"></script>
+
+</head>
+
+<body>
+
+<h1>9hoch9 · ULTRA · Orbit · Pipeline12</h1>
+
+<div class="box" id="out"></div>
+
+<script>
+const matrix = ULTRA_KERNEL.start();
+const orbit  = CXR_ORBIT.start(matrix);
+const pipe12 = PIPELINE12_MASTER.start(matrix);
+
+document.getElementById("out").innerText =
+    JSON.stringify({matrix, orbit, pipe12}, null, 2);
+</script>
+
+</body>
+</html>
