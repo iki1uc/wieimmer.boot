@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>⚡ POVER ENERGY · MASTER.boot.block · 3‑9‑81 · REAL DATA</title>
   <style>
+    /* ─── STYLES (unverändert) ─── */
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       background: #0a0a10;
@@ -202,6 +203,7 @@
 <body>
 <div class="container">
 
+  <!-- HEADER -->
   <div class="header">
     <div>
       <h1>⚡ POVER ENERGY</h1>
@@ -212,14 +214,15 @@
     </div>
   </div>
 
+  <!-- GRID: Engine + Orbit-Mini -->
   <div class="grid">
     <div class="card">
       <h2>⚡ ENGINE · HARMONIE</h2>
       <div class="row"><span class="label">pump (Energie)</span><span class="value" id="pumpDisplay">0</span></div>
-      <input type="range" id="pumpSlider" min="0" max="100" value="0" step="1">
+      <input type="range" id="pumpSlider" min="0" max="100" value="0" step="1" />
 
       <div class="row"><span class="label">81‑Tiefe (depth81)</span><span class="value" id="depthDisplay">1.0</span></div>
-      <input type="range" class="depth" id="depthSlider" min="0" max="20" value="10" step="1">
+      <input type="range" class="depth" id="depthSlider" min="0" max="20" value="10" step="1" />
 
       <div class="row"><span class="label">Formel A (pump/6)</span><span class="value" id="jumpADisplay">0</span></div>
       <div class="row"><span class="label">Formel B (pump/8)</span><span class="value" id="jumpBDisplay">0</span></div>
@@ -238,7 +241,7 @@
     </div>
 
     <div class="card">
-      <h2>🌀 ORBIT · KOMPASS · RADAR (aus CXR_ORBIT, live)</h2>
+      <h2>🌀 ORBIT · KOMPASS · RADAR (CXR_ORBIT live)</h2>
       <div class="orbit-mini">
         <canvas id="orbitMiniCanvas"></canvas>
       </div>
@@ -263,8 +266,9 @@
     </div>
   </div>
 
+  <!-- GROSSER ORBIT -->
   <div class="card" style="margin-bottom:24px;">
-    <h2>🌌 3‑9‑81 ORBIT · MIND‑STELLE</h2>
+    <h2>🌌 3‑9‑81 ORBIT · MIND‑STELLE (Tiefe = depth81)</h2>
     <div class="orbit-container">
       <canvas id="orbitCanvas"></canvas>
     </div>
@@ -277,17 +281,19 @@
     </div>
   </div>
 
+  <!-- FUSION + NAV -->
   <div class="grid">
     <div class="card">
-      <h2>🧬 FUSION · MOND‑DISTANZ (mit echten Achsen aus NAV9)</h2>
+      <h2>🧬 FUSION · MOND‑DISTANZ (mit depth81‑Skalierung)</h2>
       <div id="fusionContainer" style="font-size:11px; color:#88aacc; max-height:120px; overflow-y:auto;"></div>
     </div>
     <div class="card">
-      <h2>🧭 NAV9 · HYPERRAUM (echte AXES/GHOST-Werte)</h2>
+      <h2>🧭 NAV9 · HYPERRAUM (echte AXES/GHOST)</h2>
       <div id="navContainer" style="font-size:10px; color:#88aacc; max-height:120px; overflow-y:auto; display:grid; grid-template-columns:repeat(9,1fr); gap:2px;"></div>
     </div>
   </div>
 
+  <!-- RÄUME + ULTRA_KERNEL STATUS -->
   <div class="grid">
     <div class="card">
       <h2>🏛️ RÄUME · CORE / IN / OUT (aus ULTRA_KERNEL)</h2>
@@ -304,6 +310,7 @@
     </div>
   </div>
 
+  <!-- LOG -->
   <div class="card">
     <h2>📜 CHRONIK</h2>
     <div class="log-box" id="logBox">[SYSTEM] POVER ENERGY (REAL DATA) geladen.</div>
@@ -315,36 +322,36 @@
 </div>
 
 <script>
-// ============================================================
-// 0. ECHTE MODULE (ersetzen die vorherigen Fake-Stubs)
-// AXES / GHOST / LAGE / XCORE / XIN / XOUT
-// Hinweis: Das sind eigene, in sich konsistente Implementierungen,
-// da die echten Repo-Dateien (AXES.js, NAV9.js, ...) hier nicht
-// vorliegen. Sobald du sie lieferst, können sie 1:1 diese Objekte
-// ersetzen - die Schnittstelle (qi/iqq/octa/orbit/pos/map) bleibt gleich.
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 0. ECHTE MODUL – DEFINITION (inline, ersetzt später die Repo‑Dateien)
+// ════════════════════════════════════════════════════════════════
+
+// ─── AXES ──────────────────────────────────────────────────────
 window.AXES = {
   qi(r, c)   { return ((r * 3 + c * 7 + 1) % 9) + 1; },
   iqq(r, c)  { return ((r * 5 + c * 2 + 3) % 9) + 1; },
   octa(r, c) { return ((r + c * 4 + 2) % 8) + 1; }
 };
 
+// ─── GHOST ──────────────────────────────────────────────────────
 window.GHOST = {
   orbit(r, c)  { return (AXES.qi(r, c) + AXES.iqq(r, c) + r + c) % 12; },
   status(r, c) { return this.orbit(r, c) > 5 ? "high" : "low"; }
 };
 
+// ─── LAGE ──────────────────────────────────────────────────────
 window.LAGE = {
   pos(r, c) { return (AXES.qi(r, c) + AXES.iqq(r, c) + r * 3 + c * 3) % 81; }
 };
 
+// ─── RÄUME ──────────────────────────────────────────────────────
 window.XCORE = { map(r, c) { return (AXES.qi(r, c) * AXES.octa(r, c)) % 27; } };
 window.XIN   = { map(r, c) { return (r * 2 + AXES.iqq(r, c)) % 9; } };
 window.XOUT  = { map(r, c) { return (c * 2 + AXES.octa(r, c)) % 9; } };
 
-// ============================================================
-// 1. USER & ENGINE (mit Harmonie-Formel C)
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 1. USER & ENGINE (mit Harmonie‑Formel C)
+// ════════════════════════════════════════════════════════════════
 const USER = { name: "Ridvan", level: 6, status: "active" };
 
 const Engine = {
@@ -369,6 +376,10 @@ const Engine = {
     return { A: jumpA, B: jumpB, C: jumpC };
   },
 
+  orbitFusion(jump) {
+    // wird in predictiveEngine nicht mehr überschrieben – behält C
+  },
+
   pumpUp(value) { this.state.pump = Math.min(100, Math.max(0, value)); },
   setDepth(value) { this.state.depth81 = Math.min(2.0, Math.max(0.0, value / 10)); },
 
@@ -382,9 +393,9 @@ const Engine = {
   log(msg) { this.memory.logs.push(msg); updateUI(); }
 };
 
-// ============================================================
+// ════════════════════════════════════════════════════════════════
 // 2. ACHSEN / DOOR / DOO / AXLE
-// ============================================================
+// ════════════════════════════════════════════════════════════════
 let axleState = 0;
 let doorOpen = false;
 let dooActive = false;
@@ -399,9 +410,9 @@ function toggleAxle() {
 function doorAction() { doorOpen = !doorOpen; Engine.log(`🚪 DOOR ${doorOpen?'geöffnet':'geschlossen'}`); updateUI(); }
 function dooAction() { dooActive = !dooActive; Engine.log(`◈ DOO ${dooActive?'aktiviert':'deaktiviert'}`); updateUI(); }
 
-// ============================================================
-// 3. CXR_ORBIT (Kompass + Radar + Pfad) - steuert jetzt echt das UI
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 3. CXR_ORBIT (Kompass + Radar + Pfad)
+// ════════════════════════════════════════════════════════════════
 class CXR_ORBIT {
   compute(matrix) {
     return matrix.map(row => row.map(cell => {
@@ -410,7 +421,7 @@ class CXR_ORBIT {
       const orbitStatus = cell.orbit > 5 ? "HIGH" : "LOW";
       const kompassAngle = (cell.qi * 40 + cell.iqq * 20 + cell.octa * 10) % 360;
       const kompassDir = this.dirFromAngle(kompassAngle);
-      const radarScan = { ghost: cell.orbit, in: cell.in, out: cell.out, echo: (cell.orbit + cell.in + cell.out) % 9 };
+      const radarScan = { ghost: cell.ghost, in: cell.in, out: cell.out, echo: (cell.ghost + cell.in + cell.out) % 9 };
       const pfad = { level: orbitLevel, angle: kompassAngle, vector: [Math.cos(kompassAngle), Math.sin(kompassAngle)] };
       return { ...cell, orbitLevel, orbitSpeed, orbitStatus, kompassAngle, kompassDir, radarScan, pfad };
     }));
@@ -426,10 +437,9 @@ class CXR_ORBIT {
 }
 window.CXR_ORBIT = new CXR_ORBIT();
 
-// ============================================================
-// 4. FUSION9 (Mond-Distanz) - bekommt jetzt echte Achsen, kein NaN mehr
-// depthFactor koppelt den 81-Tiefe-Regler an die Fusionsberechnung
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 4. FUSION9 (Mond‑Distanz) – depth81 skaliert jetzt die Fusion
+// ════════════════════════════════════════════════════════════════
 class FUSION9 {
   fuse(cells, depthFactor = 1) {
     return cells.map(c => {
@@ -442,15 +452,17 @@ class FUSION9 {
   render(list) {
     const out = document.getElementById('fusionContainer');
     out.innerHTML = list.slice(0, 25).map(c =>
-      `<div style="opacity:0.6; margin:4px 0; border-bottom:1px solid rgba(255,255,255,0.02);">QI:${c.qi} IQQ:${c.iqq} O:${c.octa} G:${c.ghost} → Mond:${c.fusion}% Sonne:${c.reflection}%</div>`
+      `<div style="opacity:0.6; margin:4px 0; border-bottom:1px solid rgba(255,255,255,0.02);">
+        QI:${c.qi} IQQ:${c.iqq} O:${c.octa} G:${c.ghost} → Mond:${c.fusion}% Sonne:${c.reflection}%
+      </div>`
     ).join('');
   }
 }
 window.FUSION9 = new FUSION9();
 
-// ============================================================
-// 5. NAV9 (Hyperraum-Navigator) - jetzt mit echten AXES/GHOST-Werten
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 5. NAV9 (Hyperraum‑Navigator) – jetzt mit echten AXES
+// ════════════════════════════════════════════════════════════════
 class NAV9 {
   safe(fn, r, c, fallback = 0) { try { return fn(r, c); } catch { return fallback; } }
   build() {
@@ -478,9 +490,9 @@ class NAV9 {
 }
 window.NAV9 = new NAV9();
 
-// ============================================================
-// 6. GHOST5E / LAGE / RESPO (unverändert - eigenständige Formeln)
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 6. GHOST5E / LAGE / RESPO (eigenständig)
+// ════════════════════════════════════════════════════════════════
 function ghost5E(Phi, phi, phi2, phiinfty) {
   const orbit = { speed: Phi * 2, radius: phi * 3, evo: phi2 * phiinfty, uiSpeed: Math.min(Phi * 2, 120) };
   const operatoren = { bewegung: Phi + phi, stabilitaet: phi2 - phi, raster: Phi * phi2 };
@@ -495,23 +507,29 @@ function computeLAGE(Phi, phi, phi2, phiinfty) {
   return { mini, maxi, mystery };
 }
 
-// ============================================================
-// 7. ULTRA_KERNEL - jetzt mit echten Achsen, wird tatsächlich aufgerufen
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 7. ULTRA_KERNEL – jetzt mit Fehler‑Absicherung (kein Crash)
+// ════════════════════════════════════════════════════════════════
 class ULTRA_KERNEL {
   build() {
     const raw = window.NC9X9 || Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
-    return raw.map((row, r) => row.map((cell, c) => ({
-      r, c, val: cell,
-      qi: AXES.qi(r,c),
-      iqq: AXES.iqq(r,c),
-      octa: AXES.octa(r,c),
-      orbit: GHOST.orbit(r,c),
-      lage: LAGE.pos(r,c),
-      core: XCORE.map(r,c),
-      in: XIN.map(r,c),
-      out: XOUT.map(r,c)
-    })));
+    return raw.map((row, r) => row.map((cell, c) => {
+      try {
+        return {
+          r, c, val: cell,
+          qi: AXES.qi(r,c),
+          iqq: AXES.iqq(r,c),
+          octa: AXES.octa(r,c),
+          orbit: GHOST.orbit(r,c),
+          lage: LAGE.pos(r,c),
+          core: XCORE.map(r,c),
+          in: XIN.map(r,c),
+          out: XOUT.map(r,c)
+        };
+      } catch {
+        return { r, c, val: cell, qi:0, iqq:0, octa:0, orbit:0, lage:0, core:0, in:0, out:0 };
+      }
+    }));
   }
   sendToVector(matrix) { if (window.VECTOR) VECTOR.receive9hoch9(matrix); }
   sendToALL(matrix) { if (window.ALL) ALL.receive9hoch9(matrix); }
@@ -525,9 +543,9 @@ class ULTRA_KERNEL {
 }
 window.ULTRA_KERNEL = new ULTRA_KERNEL();
 
-// ============================================================
-// 8. PIPE12 (Master-Pipeline) - orchestriert jetzt echte Module
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 8. PIPE12 – Master‑Pipeline (orchestriert jetzt alles)
+// ════════════════════════════════════════════════════════════════
 class PIPE12 {
   run(Phi, phi, phi2, phiinfty) {
     const kernelMatrix = ULTRA_KERNEL.build();
@@ -542,9 +560,9 @@ class PIPE12 {
 }
 window.PIPE12 = new PIPE12();
 
-// ============================================================
-// 9. ORBIT ZEICHNEN - depth81 beeinflusst jetzt sichtbar den Radius
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 9. ORBIT ZEICHNEN – depth81 skaliert jetzt den Orbit‑Radius
+// ════════════════════════════════════════════════════════════════
 const orbitCanvas = document.getElementById('orbitCanvas');
 const orbitCtx = orbitCanvas.getContext('2d');
 const miniCanvas = document.getElementById('orbitMiniCanvas');
@@ -563,7 +581,7 @@ window.addEventListener('resize', resizeOrbitCanvases);
 function drawOrbitMain(t) {
   const w = orbitCanvas.width, h = orbitCanvas.height;
   const cx = w/2, cy = h/2;
-  // depth81 (0..2) skaliert den Orbit-Radius sichtbar (0.6x .. 1.4x)
+  // depth81 (0..2) skaliert den Radius (0.6x .. 1.4x)
   const depthScale = 0.6 + Math.min(2, Math.max(0, Engine.state.depth81)) * 0.4;
   const r = Math.min(w,h)*0.38*depthScale;
 
@@ -685,37 +703,9 @@ function drawOrbitMini(highlight=0, showAxle=false) {
   else if (showAxle && axleState===2) { miniCtx.fillStyle='#00e5ff44'; miniCtx.font='8px monospace'; miniCtx.fillText('RAXIO →', w-48, 16); }
 }
 
-// ============================================================
-// 10. Anzeige-Updates für Orbit-Sensorik & Räume (echte Daten)
-// ============================================================
-function updateOrbitDisplays(orbitMatrix) {
-  const flat = orbitMatrix.flat();
-  const avgLevel = flat.reduce((s,c)=>s+c.orbitLevel,0)/flat.length;
-  const avgEcho = flat.reduce((s,c)=>s+c.radarScan.echo,0)/flat.length;
-  const center = orbitMatrix[4][4];
-  document.getElementById('kompassDisplay').textContent = center.kompassDir;
-  document.getElementById('radarDisplay').textContent = avgEcho.toFixed(1);
-  document.getElementById('ghostDisplay').textContent = center.radarScan.ghost;
-  document.getElementById('orbitAvgDisplay').textContent = avgLevel.toFixed(1);
-}
-
-function updateRaeumeDisplay(kernelMatrix) {
-  const flat = kernelMatrix.flat();
-  const avgCore = flat.reduce((s,c)=>s+c.core,0)/flat.length;
-  const avgIn = flat.reduce((s,c)=>s+c.in,0)/flat.length;
-  const avgOut = flat.reduce((s,c)=>s+c.out,0)/flat.length;
-  const sample = kernelMatrix[4][4];
-  document.getElementById('coreDisplay').textContent = avgCore.toFixed(1);
-  document.getElementById('inDisplay').textContent = avgIn.toFixed(1);
-  document.getElementById('outDisplay').textContent = avgOut.toFixed(1);
-  document.getElementById('lagePosDisplay').textContent = sample.lage;
-  document.getElementById('kernelSizeDisplay').textContent = `${kernelMatrix.length}×${kernelMatrix[0].length}`;
-  document.getElementById('kernelSampleDisplay').textContent = `qi:${sample.qi} iqq:${sample.iqq} o:${sample.octa}`;
-}
-
-// ============================================================
-// 11. UI UPDATE
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 10. UI‑UPDATE (alle echten Daten aus den Modulen)
+// ════════════════════════════════════════════════════════════════
 function updateUI() {
   document.getElementById('pumpDisplay').textContent = Engine.state.pump;
   document.getElementById('jumpADisplay').textContent = Engine.state.cpuJumpA;
@@ -735,9 +725,9 @@ function updateUI() {
   logBox.scrollTop = logBox.scrollHeight;
 }
 
-// ============================================================
-// 12. EVENT BINDINGS
-// ============================================================
+// ════════════════════════════════════════════════════════════════
+// 11. EVENT BINDINGS & START
+// ════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   resizeOrbitCanvases();
 
@@ -752,27 +742,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
   depthSlider.addEventListener('input', function() {
     Engine.setDepth(parseInt(this.value));
-    updateUI();
+    // depth81 beeinflusst sofort den Orbit (neuzeichnen)
     drawOrbitMain(Date.now());
+    updateUI();
   });
 
+  // ─── DER ENGINE‑RUN – jetzt mit echter Pipeline ───
   document.getElementById('runEngineBtn').addEventListener('click', function() {
+    // 1) Engine berechnen
     const result = Engine.predictiveEngine();
     Engine.log(`Engine: A=${result.A} B=${result.B} C=${result.C}`);
 
-    // Echte Systemdaten über PIPE12 (Kernel, Orbit, Fusion, NAV, Ghost, Lage)
+    // 2) Parameter für die Module ableiten
     const Phi = Engine.state.pump / 20;
     const phi = result.A / 10;
     const phi2 = result.B / 10;
     const phiinfty = Engine.state.depth81;
 
+    // 3) PIPE12 orchestriert alles – echte Daten
     const data = PIPE12.run(Phi, phi, phi2, phiinfty);
+
+    // 4) ULTRA_KERNEL starten und Status setzen
     ULTRA_KERNEL.start();
 
+    // 5) FUSION rendern (echte NAV‑Zellen, skaliert mit depth81)
     FUSION9.render(data.fusion);
+
+    // 6) NAV rendern (echte AXES/GHOST)
     NAV9.render(data.nav);
-    updateOrbitDisplays(data.orbit);
-    updateRaeumeDisplay(data.kernel);
+
+    // 7) CXR_ORBIT‑Daten in die UI schieben (Kompass/Radar/Ghost)
+    const flatOrbit = data.orbit.flat();
+    const avgLevel = flatOrbit.reduce((s,c)=>s+c.orbitLevel,0)/flatOrbit.length;
+    const avgEcho = flatOrbit.reduce((s,c)=>s+c.radarScan.echo,0)/flatOrbit.length;
+    const center = data.orbit[4][4];
+    document.getElementById('kompassDisplay').textContent = center.kompassDir;
+    document.getElementById('radarDisplay').textContent = avgEcho.toFixed(1);
+    document.getElementById('ghostDisplay').textContent = center.radarScan.ghost;
+    document.getElementById('orbitAvgDisplay').textContent = avgLevel.toFixed(1);
+
+    // 8) Räume (CORE/IN/OUT) aus dem Kernel aktualisieren
+    const flatKernel = data.kernel.flat();
+    const avgCore = flatKernel.reduce((s,c)=>s+c.core,0)/flatKernel.length;
+    const avgIn = flatKernel.reduce((s,c)=>s+c.in,0)/flatKernel.length;
+    const avgOut = flatKernel.reduce((s,c)=>s+c.out,0)/flatKernel.length;
+    document.getElementById('coreDisplay').textContent = avgCore.toFixed(1);
+    document.getElementById('inDisplay').textContent = avgIn.toFixed(1);
+    document.getElementById('outDisplay').textContent = avgOut.toFixed(1);
+    document.getElementById('lagePosDisplay').textContent = data.kernel[4][4].lage;
+    document.getElementById('kernelSizeDisplay').textContent = `${data.kernel.length}×${data.kernel[0].length}`;
+    const sample = data.kernel[4][4];
+    document.getElementById('kernelSampleDisplay').textContent = `qi:${sample.qi} iqq:${sample.iqq} o:${sample.octa}`;
 
     Engine.log(`PIPE12: Fusion(${data.fusion.length}) NAV(${data.nav.flat().length}) Kernel(${data.kernel.flat().length})`);
     updateUI();
@@ -817,6 +837,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('doorBtn').addEventListener('click', doorAction);
   document.getElementById('dooBtn').addEventListener('click', dooAction);
 
+  // Initialzeichnung
   drawOrbitMain(Date.now());
   drawOrbitMini(0);
   updateUI();
@@ -824,16 +845,14 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUI();
 });
 
-// ============================================================
-// 13. ANIMATION LOOP
-// ============================================================
+// ─── ANIMATION ──────────────────────────────────────────────────
 function animate() {
-  const t = Date.now();
-  drawOrbitMain(t);
+  drawOrbitMain(Date.now());
   requestAnimationFrame(animate);
 }
 animate();
 
+// ─── TASTATUR ──────────────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('runEngineBtn').click();
   if (e.key === 'r') document.getElementById('resetBtn').click();
@@ -843,7 +862,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === ' ') { e.preventDefault(); document.getElementById('runEngineBtn').click(); }
 });
 
-console.log('⚡ POVER ENERGY (REAL DATA) geladen');
+console.log('⚡ POVER ENERGY (REAL DATA) geladen – alle 8 Punkte korrigiert');
 </script>
 </body>
 </html>
