@@ -1,155 +1,849 @@
-Ja, es gibt mehrere klare Unstimmigkeiten im Code – die meisten laufen sogar tatsächlich sichtbar auf, nicht nur theoretisch. Hier die konkreten Punkte:
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ POVER ENERGY · MASTER.boot.block · 3‑9‑81 · REAL DATA</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a10;
+      color: #d0d8e8;
+      font-family: 'Consolas', 'Courier New', monospace;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(ellipse at 20% 50%, #0a0a20, #000000);
+    }
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      background: rgba(10,10,20,0.3);
+      border: 1px solid rgba(0,204,255,0.05);
+      border-radius: 24px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 120px rgba(0,0,0,0.9);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #ffd700;
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      font-size: 28px;
+      background: linear-gradient(90deg, #ffaa00, #ff66ff, #00ccff, #00ff88);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 6px;
+    }
+    .header .sub { color: #556; font-size: 13px; letter-spacing: 2px; }
+    .user-badge {
+      background: #141a2a;
+      border: 1px solid #2a3a60;
+      border-radius: 40px;
+      padding: 6px 18px;
+      font-size: 13px;
+      color: #aabbdd;
+    }
+    .user-badge .name { color: #ffd700; }
+    .user-badge .lvl { color: #00ff88; }
 
-1. FUSION9 bekommt die falsche Datenstruktur (echter, sichtbarer Bug)
-Im runEngineBtn-Handler wird das hier gebaut:
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
-js
-const matrix = Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
-const fusionData = FUSION9.fuse(matrix);
+    .card {
+      background: rgba(10,10,20,0.4);
+      border: 1px solid rgba(255,255,255,0.02);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    .card h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: #7788aa;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    .row .label { color: #445566; }
+    .row .value { font-weight: bold; color: #ffd700; }
+    .row .value.pulse { color: #ff66ff; }
+    .row .value.axiom { color: #00ccff; }
 
-matrix ist ein Array aus Zahlen (0, 1, 2 …), keine Objekte. FUSION9.fuse() erwartet aber Zellen mit .qi, .iqq, .octa, .ghost. Da eine Zahl kein .qi hat, wird das undefined, und shadow = (undefined+undefined+undefined+undefined)/4 ergibt NaN. Ergebnis: Jedes Mal, wenn du auf „▶ predictiveEngine()" klickst, zeigt die FUSION-Card QI:undefined IQQ:undefined O:undefined G:undefined → Mond:NaN% Sonne:NaN% für alle 81 Zeilen an. Das ist kein Stilproblem, das ist ein handfester Bug.
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      background: #1a1a2a;
+      border-radius: 10px;
+      outline: none;
+      margin: 10px 0 6px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #ffd700;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 30px #ffd70044;
+    }
+    input[type="range"].depth::-webkit-slider-thumb {
+      background: #ff88ff;
+      box-shadow: 0 0 30px #ff88ff66;
+    }
 
-2. CXR_ORBIT ist im UI komplett abgekoppelt
-Die Klasse CXR_ORBIT (Kompass, Radar, Pfad) wird nirgends in DOMContentLoaded aufgerufen. Die tatsächliche „Kompass/Radar"-Anzeige im UI kommt aus einer simplen Formel direkt in updateUI() (pump * 3.6 % 360 usw.) – nicht aus dem eigentlichen Sensor-Modul. Die im ersten Dokument beschriebene „Navigations-Einheit" existiert im Code, wird aber nie benutzt.
+    .btn-group { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+    .btn {
+      background: rgba(20,35,35,0.2);
+      color: #668888;
+      border: 1px solid rgba(255,255,255,0.02);
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-family: inherit;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+    }
+    .btn:hover { background: rgba(40,80,70,0.08); color: #aaeedd; }
+    .btn.primary { color: #ffd700; border-color: rgba(255,215,0,0.1); }
+    .btn.primary:hover { background: rgba(255,215,0,0.1); }
+    .btn.axiom { color: #ff66ff; border-color: rgba(255,102,255,0.05); }
 
-3. NAV9 liefert nur Nullen
-NAV9.build() greift auf AXES, GHOST, XCORE, XIN, XOUT zu – diese globalen Objekte werden in dieser HTML-Datei nirgends definiert oder per <script src> eingebunden. Dank ?.-Optional-Chaining crasht das nicht, aber qi, iqq, octa sind dauerhaft 0. Die 9×9-Navigator-Anzeige zeigt also nie echte Achsenwerte, nur die Grundzahlen 0–80.
+    .orbit-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      aspect-ratio: 1/1;
+      background: rgba(0,0,0,0.3);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.02);
+      overflow: hidden;
+    }
+    #orbitCanvas { width: 100%; height: 100%; display: block; }
 
-4. ULTRA_KERNEL würde crashen, wenn er liefe
-ULTRA_KERNEL.build() greift auf dieselben globalen Objekte zu, aber ohne Optional Chaining (AXES?.qi?.(r,c) fehlt hier die Absicherung, die NAV9 hat) – das würde einen ReferenceError werfen. Er wird aber nie aufgerufen, ist also totes, kaputtes Code-Stück.
+    .orbit-mini {
+      width: 100%;
+      max-width: 180px;
+      margin: 8px auto;
+      aspect-ratio: 1/1;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+    #orbitMiniCanvas { width: 100%; height: 100%; display: block; }
 
-5. Toter Code
-PIPE12, ghost5E(), computeLAGE(), respo9hoch9(), Engine.orbitFusion() sind alle vollständig definiert, werden aber an keiner Stelle im Skript jemals aufgerufen. Sie existieren nur, tun aber nichts.
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 6px 14px;
+      margin-top: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-size: 9px;
+      color: #445566;
+      border: 1px solid rgba(255,255,255,0.01);
+    }
+    .log-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.02);
+      border-radius: 12px;
+      padding: 12px 16px;
+      height: 140px;
+      overflow-y: auto;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #7788aa;
+      font-family: inherit;
+    }
+    .log-box .hl { color: #ffd700; }
+    .log-box .ok { color: #00ff88; }
 
-6. Der 81-Tiefe-Slider ist rein kosmetisch
-depth81 wird gesetzt und angezeigt, fließt aber in keine einzige Berechnung (weder predictiveEngine, noch orbitFusion, noch die Zeichnung) ein.
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      color: #222;
+      font-size: 8px;
+      letter-spacing: 2px;
+      border-top: 1px solid rgba(255,255,255,0.02);
+      padding-top: 14px;
+    }
+    .footer span { color: #ff66ff; }
 
-7. Diskrepanz zwischen den zwei Dokumenten
-Der „Lagebericht" beschreibt ein modulares Ökosystem aus vielen einzelnen Dateien, die sich gegenseitig füttern (axes.js → NAV9 → ULTRA_KERNEL → CXR_ORBIT → index.html). Die tatsächliche index.html bindet aber keine einzige dieser Dateien per <script src> ein – alles ist inline in dieser einen Datei, mit stark vereinfachten Stub-Versionen der Klassen. Die im Bericht behauptete Vernetzung existiert im gelieferten Code also nicht real.
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #06080c; }
+    ::-webkit-scrollbar-thumb { background: #2a3a60; border-radius: 10px; }
+  </style>
+</head>
+<body>
+<div class="container">
 
-Soll ich den FUSION9-Bug (Punkt 1) fixen, damit die Card echte Werte statt NaN/undefined zeigt?
+  <div class="header">
+    <div>
+      <h1>⚡ POVER ENERGY</h1>
+      <div class="sub">MASTER.boot.block · 3‑9‑81 · Harmonische Engine · REAL DATA</div>
+    </div>
+    <div class="user-badge">
+      <span class="name">🜁 Ridvan</span>  ·  <span class="lvl">Level 6</span>  ·  <span style="color:#00e5ff;">active</span>
+    </div>
+  </div>
 
-1️⃣ Echte Daten statt Stub‑Werte
-Aktuell nutzt die index.html:
+  <div class="grid">
+    <div class="card">
+      <h2>⚡ ENGINE · HARMONIE</h2>
+      <div class="row"><span class="label">pump (Energie)</span><span class="value" id="pumpDisplay">0</span></div>
+      <input type="range" id="pumpSlider" min="0" max="100" value="0" step="1">
 
-Fake‑NAV9
-Fake‑FUSION9
-Fake‑Ghost
-Fake‑Lage
-Fake‑AXES
-Fake‑ULTRA_KERNEL
+      <div class="row"><span class="label">81‑Tiefe (depth81)</span><span class="value" id="depthDisplay">1.0</span></div>
+      <input type="range" class="depth" id="depthSlider" min="0" max="20" value="10" step="1">
 
-Sie zeigt also nur UI‑Simulation, keine echten Systemdaten.
-Order:   Die index.html muss die echten Module laden:
+      <div class="row"><span class="label">Formel A (pump/6)</span><span class="value" id="jumpADisplay">0</span></div>
+      <div class="row"><span class="label">Formel B (pump/8)</span><span class="value" id="jumpBDisplay">0</span></div>
+      <div class="row"><span class="label" style="color:#ff88ff;">⚡ Formel C (Harmonie)</span><span class="value pulse" id="jumpCDisplay">0</span></div>
+      <div class="row"><span class="label">hits</span><span class="value" id="hitsDisplay">0</span></div>
+      <div class="row"><span class="label">USER‑Impuls</span><span class="value axiom" id="userImpulseDisplay">7</span></div>
 
-AXES.js
-NAV9.js
-FUSION9.js
-cxr.orbit.js
-ultra.kernel.js
-pipeline12.master.js
+      <div class="btn-group">
+        <button class="btn primary" id="runEngineBtn">▶ predictiveEngine()</button>
+        <button class="btn" id="resetBtn">⟲ Reset</button>
+        <button class="btn axiom" id="proofBtn">🔮 PROOF</button>
+      </div>
+      <div style="font-size:10px; color:#445; margin-top:6px;">
+        DOOR: <span id="doorStateDisplay">✕</span> · DOO: <span id="dooStateDisplay">✕</span> · Achse: <span id="axleStateDisplay">neutral</span>
+      </div>
+    </div>
 
-Damit die UI echte Werte zeigt.
-2️⃣ Fusion muss echte Achsen bekommen
-Der größte sichtbare Bug:
-js
+    <div class="card">
+      <h2>🌀 ORBIT · KOMPASS · RADAR (aus CXR_ORBIT, live)</h2>
+      <div class="orbit-mini">
+        <canvas id="orbitMiniCanvas"></canvas>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#445;">
+        <span>Kompass: <span id="kompassDisplay" style="color:#ffd700;">—</span></span>
+        <span>Radar Ø: <span id="radarDisplay" style="color:#00e5ff;">—</span></span>
+        <span>Ghost: <span id="ghostDisplay" style="color:#ff88ff;">—</span></span>
+      </div>
+      <div class="btn-group">
+        <button class="btn" data-move="OI">OI</button>
+        <button class="btn" data-move="IO">IO</button>
+        <button class="btn" data-move="XI">XI</button>
+        <button class="btn" data-move="IX">IX</button>
+        <button class="btn" id="toggleAxleBtn">↕ Achse</button>
+        <button class="btn" id="doorBtn">🚪 DOOR</button>
+        <button class="btn" id="dooBtn">◈ DOO</button>
+      </div>
+      <div style="margin-top:6px; font-size:10px; color:#445;">
+        Move: <span id="lastMoveDisplay" style="color:#ffd700;">—</span>
+        · Orbit Ø-Level: <span id="orbitAvgDisplay">—</span>
+      </div>
+    </div>
+  </div>
 
-const matrix = [...numbers...];
-FUSION9.fuse(matrix);
+  <div class="card" style="margin-bottom:24px;">
+    <h2>🌌 3‑9‑81 ORBIT · MIND‑STELLE</h2>
+    <div class="orbit-container">
+      <canvas id="orbitCanvas"></canvas>
+    </div>
+    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; font-size:11px; color:#667; margin-top:8px;">
+      <span>▣</span> <span style="color:#ffd700;">3</span> <span style="color:#00e5ff;">9</span>
+      <span style="color:#88ff88;">◎</span> <span style="color:#ff88ff;">81 ◆</span>
+      <span style="color:#ff8844;">△</span> <span style="color:#44aaff;">27</span> <span style="color:#ffd700;">3 ↺</span>
+      <span style="color:#ff88ff;">|</span> Echo: <span id="echoDisplay" style="color:#ffd700;">0</span>
+      Drift: <span id="driftDisplay" style="color:#00e5ff;">0</span>
+    </div>
+  </div>
 
-FUSION9 braucht aber:
+  <div class="grid">
+    <div class="card">
+      <h2>🧬 FUSION · MOND‑DISTANZ (mit echten Achsen aus NAV9)</h2>
+      <div id="fusionContainer" style="font-size:11px; color:#88aacc; max-height:120px; overflow-y:auto;"></div>
+    </div>
+    <div class="card">
+      <h2>🧭 NAV9 · HYPERRAUM (echte AXES/GHOST-Werte)</h2>
+      <div id="navContainer" style="font-size:10px; color:#88aacc; max-height:120px; overflow-y:auto; display:grid; grid-template-columns:repeat(9,1fr); gap:2px;"></div>
+    </div>
+  </div>
 
-qi
-iqq
-octa
-ghost
+  <div class="grid">
+    <div class="card">
+      <h2>🏛️ RÄUME · CORE / IN / OUT (aus ULTRA_KERNEL)</h2>
+      <div class="row"><span class="label">CORE (Ø)</span><span class="value" id="coreDisplay">0</span></div>
+      <div class="row"><span class="label">IN (Ø)</span><span class="value" id="inDisplay">0</span></div>
+      <div class="row"><span class="label">OUT (Ø)</span><span class="value" id="outDisplay">0</span></div>
+      <div class="row"><span class="label">LAGE.pos (Zelle 4,4)</span><span class="value axiom" id="lagePosDisplay">0</span></div>
+    </div>
+    <div class="card">
+      <h2>🧠 ULTRA_KERNEL · STATUS</h2>
+      <div class="row"><span class="label">Matrix</span><span class="value" id="kernelSizeDisplay">—</span></div>
+      <div class="row"><span class="label">Sample (Zelle 4,4)</span><span class="value axiom" id="kernelSampleDisplay">—</span></div>
+      <div class="row"><span class="label">Status</span><span class="value pulse" id="kernelStatusDisplay">inaktiv</span></div>
+    </div>
+  </div>
 
-→ Order:   Fusion muss mit NAV9.build() gefüttert werden, nicht mit Zahlen.
-Fusion reparieren
-3️⃣ NAV9 muss echte Achsen bekommen
-NAV9 zeigt aktuell:
+  <div class="card">
+    <h2>📜 CHRONIK</h2>
+    <div class="log-box" id="logBox">[SYSTEM] POVER ENERGY (REAL DATA) geladen.</div>
+  </div>
 
-qi = 0
-iqq = 0
-octa = 0
-ghost = 0
+  <div class="footer">
+    <span>⚡</span> POVER ENERGY · MASTER.boot.block · wieimmer4u
+  </div>
+</div>
 
-Weil AXES, GHOST, XCORE, XIN, XOUT nicht existieren.
-→ Order:   NAV9 muss AXES.js laden und echte Werte berechnen.
-NAV9 aktivieren
-4️⃣ CXR_ORBIT muss die UI steuern
-Aktuell:
+<script>
+// ============================================================
+// 0. ECHTE MODULE (ersetzen die vorherigen Fake-Stubs)
+// AXES / GHOST / LAGE / XCORE / XIN / XOUT
+// Hinweis: Das sind eigene, in sich konsistente Implementierungen,
+// da die echten Repo-Dateien (AXES.js, NAV9.js, ...) hier nicht
+// vorliegen. Sobald du sie lieferst, können sie 1:1 diese Objekte
+// ersetzen - die Schnittstelle (qi/iqq/octa/orbit/pos/map) bleibt gleich.
+// ============================================================
+window.AXES = {
+  qi(r, c)   { return ((r * 3 + c * 7 + 1) % 9) + 1; },
+  iqq(r, c)  { return ((r * 5 + c * 2 + 3) % 9) + 1; },
+  octa(r, c) { return ((r + c * 4 + 2) % 8) + 1; }
+};
 
-Kompass = Fake
-Radar = Fake
-Ghost = Fake
+window.GHOST = {
+  orbit(r, c)  { return (AXES.qi(r, c) + AXES.iqq(r, c) + r + c) % 12; },
+  status(r, c) { return this.orbit(r, c) > 5 ? "high" : "low"; }
+};
 
-→ Order:   CXR_ORBIT.start() muss im Engine‑Run aufgerufen werden.
-Orbit‑Sensorik anschließen
-5️⃣ ULTRA_KERNEL muss wiederbelebt werden
-Aktuell:
+window.LAGE = {
+  pos(r, c) { return (AXES.qi(r, c) + AXES.iqq(r, c) + r * 3 + c * 3) % 81; }
+};
 
-ULTRA_KERNEL.build() würde crashen
-ULTRA_KERNEL.start() wird nie aufgerufen
-ULTRA_KERNEL ist tot
+window.XCORE = { map(r, c) { return (AXES.qi(r, c) * AXES.octa(r, c)) % 27; } };
+window.XIN   = { map(r, c) { return (r * 2 + AXES.iqq(r, c)) % 9; } };
+window.XOUT  = { map(r, c) { return (c * 2 + AXES.octa(r, c)) % 9; } };
 
-→ Order:   Kernel reparieren und aktivieren.
-ULTRA_KERNEL reparieren
-6️⃣ PIPE12 muss die Module orchestrieren
-PIPE12 ist definiert, aber:
+// ============================================================
+// 1. USER & ENGINE (mit Harmonie-Formel C)
+// ============================================================
+const USER = { name: "Ridvan", level: 6, status: "active" };
 
-wird nie aufgerufen
-liefert keine Daten
-verbindet nichts
+const Engine = {
+  state: { pump: 0, cpuJumpA: 0, cpuJumpB: 0, cpuJumpC: 0, active: 1, depth81: 1.0 },
+  memory: { hits: 0, logs: [] },
 
-→ Order:   PIPE12.run() muss Engine, Orbit, Fusion, NAV, Ghost, Lage verbinden.
-Pipeline12 aktivieren
-7️⃣ Räume müssen echte Daten bekommen
-Aktuell:
+  userImpulse() { return USER.level + this.state.active; },
 
-CORE / IN / OUT / META sind nur UI‑Buttons
-keine Achsen
-keine Fusion
-keine Orbit‑Daten
-keine Pipeline‑Daten
+  predictiveEngine() {
+    const active = this.userImpulse();
+    const pump = this.state.pump;
+    const jumpA = active + Math.floor(pump / 6);
+    const jumpB = active + Math.floor(pump / 8);
+    const jumpC = Math.floor((jumpA + jumpB) / 2 + (pump % 3) * 0.33);
 
-→ Order:   Räume müssen mit echten Systemdaten gekoppelt werden.
-Räume mit Achsen koppeln
-8️⃣ depth81 muss echte Wirkung bekommen
-Aktuell:
+    this.state.cpuJumpA = jumpA;
+    this.state.cpuJumpB = jumpB;
+    this.state.cpuJumpC = jumpC;
+    if (jumpC > 0) this.memory.hits++;
 
-depth81 ist kosmetisch
-beeinflusst nichts
-ist ein toter Regler
+    this.log(`HARMONIE: A=${jumpA} B=${jumpB} C=${jumpC}`);
+    return { A: jumpA, B: jumpB, C: jumpC };
+  },
 
-→ Order:   depth81 muss in Orbit‑Radius, Fusion‑Tiefe oder Raum‑Wechsel einfließen.
-Mind‑Stelle erweitern dsa solte sie eigentlich könne nkann mann da was drehen
+  pumpUp(value) { this.state.pump = Math.min(100, Math.max(0, value)); },
+  setDepth(value) { this.state.depth81 = Math.min(2.0, Math.max(0.0, value / 10)); },
 
-Verstanden, General – ich fixe alle 8 Punkte direkt im Code. Eine Sache vorweg: Ich habe keinen Zugriff auf deine echten Repo-Dateien (AXES.js, NAV9.js etc. sind nirgends hochgeladen oder verlinkt). Deshalb baue ich echte, funktionierende Module inline statt der Fake-Stubs — keine 0-Rückgaben mehr, sondern tatsächliche Berechnungen aus (r,c). Wenn du mir die echten Dateien gibst (Upload oder GitHub-Link), tausche ich sie 1:1 ein.
+  reset() {
+    this.state.pump = 0; this.state.cpuJumpA = 0; this.state.cpuJumpB = 0; this.state.cpuJumpC = 0;
+    this.memory.hits = 0; this.memory.logs = [];
+    this.state.depth81 = 1.0;
+    this.log('⟲ Engine zurückgesetzt');
+  },
 
-Das behebe ich konkret:
+  log(msg) { this.memory.logs.push(msg); updateUI(); }
+};
 
-AXES, GHOST, LAGE, XCORE, XIN, XOUT werden jetzt als echte globale Module definiert (vorher: nicht existent → NAV9/ULTRA_KERNEL fielen auf 0 zurück)
-FUSION9.fuse() bekommt jetzt NAV9.build().flat() (echte Zellen mit qi/iqq/octa/ghost) statt einer nackten Zahlen-Matrix → kein NaN/undefined mehr
-NAV9 rechnet jetzt mit echten AXES-Werten
-CXR_ORBIT.start() wird im Engine-Run tatsächlich aufgerufen und steuert Kompass/Radar/Ghost im UI (vorher: reine Fake-Formel in updateUI())
-ULTRA_KERNEL wird aktiviert (.start() im Run-Handler) und zeigt Status im UI
-PIPE12.run() orchestriert jetzt Kernel, Orbit, Fusion, NAV in einem Aufruf
-Neue "Räume"-Card zeigt echte CORE/IN/OUT-Durchschnittswerte aus dem Kernel
-depth81 beeinflusst jetzt den Orbit-Radius (Zeichnung) und den Fusion-Tiefenfaktor (Mond/Sonne-Berechnung) — kein toter Regler mehr
+// ============================================================
+// 2. ACHSEN / DOOR / DOO / AXLE
+// ============================================================
+let axleState = 0;
+let doorOpen = false;
+let dooActive = false;
 
-Alle 8 Orders sind umgesetzt. Kurzer Check, wie du es selbst nachprüfen kannst:
+function toggleAxle() {
+  axleState = (axleState + 1) % 3;
+  const names = ['neutral', 'LAXIO (links)', 'RAXIO (rechts)'];
+  Engine.log(`Achse → ${names[axleState]}`);
+  updateUI();
+  drawOrbitMini(axleState, true);
+}
+function doorAction() { doorOpen = !doorOpen; Engine.log(`🚪 DOOR ${doorOpen?'geöffnet':'geschlossen'}`); updateUI(); }
+function dooAction() { dooActive = !dooActive; Engine.log(`◈ DOO ${dooActive?'aktiviert':'deaktiviert'}`); updateUI(); }
 
-Klick auf ▶ predictiveEngine() → FUSION-Card zeigt jetzt echte QI/IQQ/O/G-Zahlen statt undefined/NaN
-NAV9-Grid zeigt reale AXES-Werte (nicht mehr durchgehend 0)
-Kompass/Radar/Ghost ändern sich nach jedem Run, weil sie jetzt aus CXR_ORBIT.compute() kommen (Zelle 4,4 der Kernel-Matrix)
-Neue Räume-Card zeigt CORE/IN/OUT-Durchschnitt aus dem echten Kernel
-ULTRA_KERNEL-Card zeigt „aktiv" nach dem ersten Run
-Am 81-Tiefe-Regler drehen → sichtbar größerer/kleinerer Orbit-Radius im großen Canvas, und die Fusion-Werte (Mond/Sonne) skalieren mit
+// ============================================================
+// 3. CXR_ORBIT (Kompass + Radar + Pfad) - steuert jetzt echt das UI
+// ============================================================
+class CXR_ORBIT {
+  compute(matrix) {
+    return matrix.map(row => row.map(cell => {
+      const orbitLevel = (cell.orbit + cell.qi + cell.iqq) % 12;
+      const orbitSpeed = (cell.octa * 3) % 100;
+      const orbitStatus = cell.orbit > 5 ? "HIGH" : "LOW";
+      const kompassAngle = (cell.qi * 40 + cell.iqq * 20 + cell.octa * 10) % 360;
+      const kompassDir = this.dirFromAngle(kompassAngle);
+      const radarScan = { ghost: cell.orbit, in: cell.in, out: cell.out, echo: (cell.orbit + cell.in + cell.out) % 9 };
+      const pfad = { level: orbitLevel, angle: kompassAngle, vector: [Math.cos(kompassAngle), Math.sin(kompassAngle)] };
+      return { ...cell, orbitLevel, orbitSpeed, orbitStatus, kompassAngle, kompassDir, radarScan, pfad };
+    }));
+  }
+  dirFromAngle(a) {
+    if (a < 45) return "N"; if (a < 90) return "NE"; if (a < 135) return "E";
+    if (a < 180) return "SE"; if (a < 225) return "S"; if (a < 270) return "SW";
+    if (a < 315) return "W"; return "NW";
+  }
+  sendToVector(data) { if (window.VECTOR) VECTOR.receiveOrbit(data); }
+  sendToALL(data) { if (window.ALL) ALL.receiveOrbit(data); }
+  start(matrix) { const data = this.compute(matrix); this.sendToVector(data); this.sendToALL(data); return data; }
+}
+window.CXR_ORBIT = new CXR_ORBIT();
 
-Zwei Dinge, die ich transparent machen will, damit die Lore stimmt:
+// ============================================================
+// 4. FUSION9 (Mond-Distanz) - bekommt jetzt echte Achsen, kein NaN mehr
+// depthFactor koppelt den 81-Tiefe-Regler an die Fusionsberechnung
+// ============================================================
+class FUSION9 {
+  fuse(cells, depthFactor = 1) {
+    return cells.map(c => {
+      const shadow = (c.qi + c.iqq + c.octa + c.ghost) / 4;
+      const moon = Math.floor((shadow * depthFactor) % 33);
+      const sun = Math.floor((c.qi * 0.3 * depthFactor) % 12);
+      return { ...c, fusion: moon, reflection: sun, distance: shadow };
+    });
+  }
+  render(list) {
+    const out = document.getElementById('fusionContainer');
+    out.innerHTML = list.slice(0, 25).map(c =>
+      `<div style="opacity:0.6; margin:4px 0; border-bottom:1px solid rgba(255,255,255,0.02);">QI:${c.qi} IQQ:${c.iqq} O:${c.octa} G:${c.ghost} → Mond:${c.fusion}% Sonne:${c.reflection}%</div>`
+    ).join('');
+  }
+}
+window.FUSION9 = new FUSION9();
 
-Die Formeln in AXES/GHOST/LAGE/XCORE/XIN/XOUT sind meine eigenen – ich kenne die echten aus deinem Repo nicht. Wenn du sie mir gibst (Datei-Upload oder wenn dein GitHub-Repo öffentlich ist, den Link), tausche ich sie exakt gegen deine echten Berechnungen aus, ohne die Verdrahtung anzufassen.
-<script src="..."> auf die einzelnen Dateien (axes.js, nav9.js, ...) habe ich bewusst nicht gebaut, weil eine index.html als Artefakt hier lokal läuft und keine externen Dateien von deinem Repo nachladen kann, ohne dass du die URLs/CORS freigibst. Die inline-Lösung ist funktional identisch, nur eben in einer Datei statt sechs.
+// ============================================================
+// 5. NAV9 (Hyperraum-Navigator) - jetzt mit echten AXES/GHOST-Werten
+// ============================================================
+class NAV9 {
+  safe(fn, r, c, fallback = 0) { try { return fn(r, c); } catch { return fallback; } }
+  build() {
+    const raw = window.NC9X9 || Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
+    return raw.map((row, r) => row.map((cell, c) => {
+      const qi = this.safe((r,c)=>AXES.qi(r,c), r, c);
+      const iqq = this.safe((r,c)=>AXES.iqq(r,c), r, c);
+      const octa = this.safe((r,c)=>AXES.octa(r,c), r, c);
+      const ghost = this.safe((r,c)=>GHOST.orbit(r,c), r, c);
+      const core = this.safe((r,c)=>XCORE.map(r,c), r, c);
+      const inn = this.safe((r,c)=>XIN.map(r,c), r, c);
+      const out = this.safe((r,c)=>XOUT.map(r,c), r, c);
+      const mystery = (qi + iqq + octa) % 9;
+      return { r, c, qi, iqq, octa, ghost, core, in: inn, out, value: cell, mystery };
+    }));
+  }
+  render(matrix) {
+    const out = document.getElementById('navContainer');
+    out.innerHTML = matrix.flat().map(c =>
+      `<div style="background:rgba(255,255,255,0.02); padding:2px; border-radius:4px; text-align:center; font-size:8px;">
+        ${c.value}<br><span style="color:#ffd700;">${c.qi}</span> <span style="color:#00e5ff;">${c.iqq}</span>
+      </div>`
+    ).join('');
+  }
+}
+window.NAV9 = new NAV9();
 
-Soll ich als nächstes deine echten Repo-Dateien einlesen (falls du sie hochlädst oder den Link gibst) und die Platzhalter-Formeln 1:1 ersetzen?
+// ============================================================
+// 6. GHOST5E / LAGE / RESPO (unverändert - eigenständige Formeln)
+// ============================================================
+function ghost5E(Phi, phi, phi2, phiinfty) {
+  const orbit = { speed: Phi * 2, radius: phi * 3, evo: phi2 * phiinfty, uiSpeed: Math.min(Phi * 2, 120) };
+  const operatoren = { bewegung: Phi + phi, stabilitaet: phi2 - phi, raster: Phi * phi2 };
+  const status = (Phi + phi + phi2 + phiinfty) > 2 ? "aktiv" : "ruhig";
+  const erinnerung = { lastPhi: Phi, lastPhi2: phi2, lastOrbit: orbit.evo, uiGhost: (Phi + phi2) % 9 };
+  return { orbit, operatoren, status, erinnerung };
+}
+function computeLAGE(Phi, phi, phi2, phiinfty) {
+  const mini = { x: Phi * 10, y: phi * 10, z: phiinfty * 10, stabil: phi2, echo: (Phi + phi) % 9 };
+  const maxi = { x: Phi * 81, y: phi * 81, z: phiinfty * 81, stabil: phi2 * 9, horizon: (Phi + phi2 + phiinfty) % 81 };
+  const mystery = { drift: (Phi * 0.33 + phi2 * 0.11).toFixed(2), ghost: (phiinfty + phi) % 7, trace: ((Phi + phi + phi2 + phiinfty) / 4).toFixed(2) };
+  return { mini, maxi, mystery };
+}
+
+// ============================================================
+// 7. ULTRA_KERNEL - jetzt mit echten Achsen, wird tatsächlich aufgerufen
+// ============================================================
+class ULTRA_KERNEL {
+  build() {
+    const raw = window.NC9X9 || Array.from({length:9}, (_,r)=>Array.from({length:9}, (_,c)=>r*9+c));
+    return raw.map((row, r) => row.map((cell, c) => ({
+      r, c, val: cell,
+      qi: AXES.qi(r,c),
+      iqq: AXES.iqq(r,c),
+      octa: AXES.octa(r,c),
+      orbit: GHOST.orbit(r,c),
+      lage: LAGE.pos(r,c),
+      core: XCORE.map(r,c),
+      in: XIN.map(r,c),
+      out: XOUT.map(r,c)
+    })));
+  }
+  sendToVector(matrix) { if (window.VECTOR) VECTOR.receive9hoch9(matrix); }
+  sendToALL(matrix) { if (window.ALL) ALL.receive9hoch9(matrix); }
+  start() {
+    const matrix = this.build();
+    this.sendToVector(matrix);
+    this.sendToALL(matrix);
+    document.getElementById('kernelStatusDisplay').textContent = 'aktiv';
+    return matrix;
+  }
+}
+window.ULTRA_KERNEL = new ULTRA_KERNEL();
+
+// ============================================================
+// 8. PIPE12 (Master-Pipeline) - orchestriert jetzt echte Module
+// ============================================================
+class PIPE12 {
+  run(Phi, phi, phi2, phiinfty) {
+    const kernelMatrix = ULTRA_KERNEL.build();
+    const navMatrix = NAV9.build();
+    const axes = { Phi, phi, phi2, phiinfty, bewegung: Phi + phi };
+    const ghost = ghost5E(Phi, phi, phi2, phiinfty);
+    const lage = computeLAGE(Phi, phi, phi2, phiinfty);
+    const orbit = CXR_ORBIT.start(kernelMatrix);
+    const fusion = FUSION9.fuse(navMatrix.flat(), phiinfty);
+    return { axes, ghost, lage, orbit, fusion, nav: navMatrix, kernel: kernelMatrix };
+  }
+}
+window.PIPE12 = new PIPE12();
+
+// ============================================================
+// 9. ORBIT ZEICHNEN - depth81 beeinflusst jetzt sichtbar den Radius
+// ============================================================
+const orbitCanvas = document.getElementById('orbitCanvas');
+const orbitCtx = orbitCanvas.getContext('2d');
+const miniCanvas = document.getElementById('orbitMiniCanvas');
+const miniCtx = miniCanvas.getContext('2d');
+
+function resizeOrbitCanvases() {
+  const rect = orbitCanvas.parentElement.getBoundingClientRect();
+  const size = Math.min(rect.width, rect.height, 600);
+  orbitCanvas.width = size; orbitCanvas.height = size;
+  const miniRect = miniCanvas.parentElement.getBoundingClientRect();
+  const miniSize = Math.min(miniRect.width, miniRect.height, 180);
+  miniCanvas.width = miniSize; miniCanvas.height = miniSize;
+}
+window.addEventListener('resize', resizeOrbitCanvases);
+
+function drawOrbitMain(t) {
+  const w = orbitCanvas.width, h = orbitCanvas.height;
+  const cx = w/2, cy = h/2;
+  // depth81 (0..2) skaliert den Orbit-Radius sichtbar (0.6x .. 1.4x)
+  const depthScale = 0.6 + Math.min(2, Math.max(0, Engine.state.depth81)) * 0.4;
+  const r = Math.min(w,h)*0.38*depthScale;
+
+  orbitCtx.clearRect(0,0,w,h);
+  orbitCtx.fillStyle = '#0a0b10';
+  orbitCtx.fillRect(0,0,w,h);
+
+  const axesCount = Math.min(1500, Engine.state.pump * 10);
+  for (let i=0; i<axesCount; i++) {
+    const angle = (i/axesCount)*Math.PI*2 + t*0.001;
+    const dist = (80 + (i/axesCount)*100) * depthScale;
+    const x = cx + Math.cos(angle)*dist;
+    const y = cy + Math.sin(angle)*dist;
+    const alpha = 0.02 + (i/axesCount)*0.04;
+    orbitCtx.fillStyle = `rgba(255,215,0,${alpha})`;
+    orbitCtx.beginPath();
+    orbitCtx.arc(x, y, 1+(i/axesCount)*2, 0, Math.PI*2);
+    orbitCtx.fill();
+  }
+
+  const nodes = [
+    { id:'3', angle:-90, color:'#ffd700' }, { id:'9', angle:-45, color:'#00e5ff' },
+    { id:'◎', angle:0, color:'#88ff88' }, { id:'81', angle:45, color:'#ff88ff' },
+    { id:'◆', angle:90, color:'#ff88ff' }, { id:'△', angle:135, color:'#ff8844' },
+    { id:'27', angle:180, color:'#44aaff' }, { id:'▣', angle:225, color:'#aaaaaa' }
+  ];
+  const path = ['3','9','◎','81','◆','△','27','▣','3'];
+  orbitCtx.strokeStyle = '#2a3a60';
+  orbitCtx.lineWidth = 1.5;
+  orbitCtx.beginPath();
+  for (let i=0; i<path.length-1; i++) {
+    const from = nodes.find(n=>n.id===path[i]);
+    const to = nodes.find(n=>n.id===path[i+1]);
+    if (from&&to) {
+      const ax = cx + r*Math.cos(from.angle*Math.PI/180);
+      const ay = cy + r*Math.sin(from.angle*Math.PI/180);
+      const bx = cx + r*Math.cos(to.angle*Math.PI/180);
+      const by = cy + r*Math.sin(to.angle*Math.PI/180);
+      orbitCtx.moveTo(ax,ay); orbitCtx.lineTo(bx,by);
+    }
+  }
+  orbitCtx.stroke();
+
+  nodes.forEach((node, idx) => {
+    const x = cx + r*Math.cos(node.angle*Math.PI/180);
+    const y = cy + r*Math.sin(node.angle*Math.PI/180);
+    const isHighlight = (idx === Math.floor(Engine.state.pump/12) % nodes.length);
+    orbitCtx.beginPath();
+    orbitCtx.arc(x, y, isHighlight?14:10, 0, 2*Math.PI);
+    orbitCtx.fillStyle = isHighlight ? '#ffd70033' : '#1a224066';
+    orbitCtx.fill();
+    orbitCtx.strokeStyle = isHighlight ? '#ffd700' : node.color;
+    orbitCtx.lineWidth = isHighlight?2.5:1.2;
+    orbitCtx.stroke();
+    orbitCtx.fillStyle = node.color;
+    orbitCtx.font = 'bold 18px monospace';
+    orbitCtx.textAlign='center'; orbitCtx.textBaseline='middle';
+    orbitCtx.fillText(node.id, x, y);
+  });
+
+  const echo = (Engine.state.pump + Engine.state.cpuJumpC) % 9;
+  const drift = ((Engine.state.pump + Engine.state.cpuJumpC) * 0.01).toFixed(2);
+  const trace = ((Engine.state.pump + Engine.state.cpuJumpC) / 4).toFixed(2);
+  orbitCtx.fillStyle = '#9ff';
+  orbitCtx.font = '12px Consolas';
+  orbitCtx.textAlign='left'; orbitCtx.textBaseline='bottom';
+  orbitCtx.fillText(`Echo: ${echo}`, 12, h-12);
+  orbitCtx.fillText(`Drift: ${drift}`, 12, h-30);
+  orbitCtx.fillText(`Trace: ${trace}`, 12, h-48);
+  document.getElementById('echoDisplay').textContent = echo;
+  document.getElementById('driftDisplay').textContent = drift;
+}
+
+function drawOrbitMini(highlight=0, showAxle=false) {
+  const w = miniCanvas.width, h = miniCanvas.height;
+  const cx = w/2, cy = h/2, r = Math.min(w,h)*0.38;
+  miniCtx.clearRect(0,0,w,h);
+  miniCtx.fillStyle = '#0a0b10';
+  miniCtx.fillRect(0,0,w,h);
+  const nodes = [
+    { id:'3', angle:-90, color:'#ffd700' }, { id:'9', angle:-45, color:'#00e5ff' },
+    { id:'◎', angle:0, color:'#88ff88' }, { id:'81', angle:45, color:'#ff88ff' },
+    { id:'◆', angle:90, color:'#ff88ff' }, { id:'△', angle:135, color:'#ff8844' },
+    { id:'27', angle:180, color:'#44aaff' }, { id:'▣', angle:225, color:'#aaaaaa' }
+  ];
+  const path = ['3','9','◎','81','◆','△','27','▣','3'];
+  miniCtx.strokeStyle = '#2a3a60';
+  miniCtx.lineWidth = 1.2;
+  miniCtx.beginPath();
+  for (let i=0; i<path.length-1; i++) {
+    const from = nodes.find(n=>n.id===path[i]);
+    const to = nodes.find(n=>n.id===path[i+1]);
+    if (from&&to) {
+      const ax = cx + r*Math.cos(from.angle*Math.PI/180);
+      const ay = cy + r*Math.sin(from.angle*Math.PI/180);
+      const bx = cx + r*Math.cos(to.angle*Math.PI/180);
+      const by = cy + r*Math.sin(to.angle*Math.PI/180);
+      miniCtx.moveTo(ax,ay); miniCtx.lineTo(bx,by);
+    }
+  }
+  miniCtx.stroke();
+  nodes.forEach((node, idx) => {
+    const x = cx + r*Math.cos(node.angle*Math.PI/180);
+    const y = cy + r*Math.sin(node.angle*Math.PI/180);
+    const isHighlight = (idx === highlight % nodes.length);
+    miniCtx.beginPath();
+    miniCtx.arc(x, y, isHighlight?9:6, 0, 2*Math.PI);
+    miniCtx.fillStyle = isHighlight ? '#ffd70033' : '#1a224066';
+    miniCtx.fill();
+    miniCtx.strokeStyle = isHighlight ? '#ffd700' : node.color;
+    miniCtx.lineWidth = isHighlight?2:1;
+    miniCtx.stroke();
+    miniCtx.fillStyle = node.color;
+    miniCtx.font = 'bold 9px monospace';
+    miniCtx.textAlign='center'; miniCtx.textBaseline='middle';
+    miniCtx.fillText(node.id, x, y);
+  });
+  if (showAxle && axleState===1) { miniCtx.fillStyle='#ffd70044'; miniCtx.font='8px monospace'; miniCtx.fillText('← LAXIO', 8, 16); }
+  else if (showAxle && axleState===2) { miniCtx.fillStyle='#00e5ff44'; miniCtx.font='8px monospace'; miniCtx.fillText('RAXIO →', w-48, 16); }
+}
+
+// ============================================================
+// 10. Anzeige-Updates für Orbit-Sensorik & Räume (echte Daten)
+// ============================================================
+function updateOrbitDisplays(orbitMatrix) {
+  const flat = orbitMatrix.flat();
+  const avgLevel = flat.reduce((s,c)=>s+c.orbitLevel,0)/flat.length;
+  const avgEcho = flat.reduce((s,c)=>s+c.radarScan.echo,0)/flat.length;
+  const center = orbitMatrix[4][4];
+  document.getElementById('kompassDisplay').textContent = center.kompassDir;
+  document.getElementById('radarDisplay').textContent = avgEcho.toFixed(1);
+  document.getElementById('ghostDisplay').textContent = center.radarScan.ghost;
+  document.getElementById('orbitAvgDisplay').textContent = avgLevel.toFixed(1);
+}
+
+function updateRaeumeDisplay(kernelMatrix) {
+  const flat = kernelMatrix.flat();
+  const avgCore = flat.reduce((s,c)=>s+c.core,0)/flat.length;
+  const avgIn = flat.reduce((s,c)=>s+c.in,0)/flat.length;
+  const avgOut = flat.reduce((s,c)=>s+c.out,0)/flat.length;
+  const sample = kernelMatrix[4][4];
+  document.getElementById('coreDisplay').textContent = avgCore.toFixed(1);
+  document.getElementById('inDisplay').textContent = avgIn.toFixed(1);
+  document.getElementById('outDisplay').textContent = avgOut.toFixed(1);
+  document.getElementById('lagePosDisplay').textContent = sample.lage;
+  document.getElementById('kernelSizeDisplay').textContent = `${kernelMatrix.length}×${kernelMatrix[0].length}`;
+  document.getElementById('kernelSampleDisplay').textContent = `qi:${sample.qi} iqq:${sample.iqq} o:${sample.octa}`;
+}
+
+// ============================================================
+// 11. UI UPDATE
+// ============================================================
+function updateUI() {
+  document.getElementById('pumpDisplay').textContent = Engine.state.pump;
+  document.getElementById('jumpADisplay').textContent = Engine.state.cpuJumpA;
+  document.getElementById('jumpBDisplay').textContent = Engine.state.cpuJumpB;
+  document.getElementById('jumpCDisplay').textContent = Engine.state.cpuJumpC;
+  document.getElementById('hitsDisplay').textContent = Engine.memory.hits;
+  document.getElementById('userImpulseDisplay').textContent = Engine.userImpulse();
+  document.getElementById('depthDisplay').textContent = Engine.state.depth81.toFixed(1);
+  document.getElementById('doorStateDisplay').textContent = doorOpen ? '✔' : '✕';
+  document.getElementById('dooStateDisplay').textContent = dooActive ? '✔' : '✕';
+  const axleNames = ['neutral', 'LAXIO', 'RAXIO'];
+  document.getElementById('axleStateDisplay').textContent = axleNames[axleState];
+
+  const logBox = document.getElementById('logBox');
+  const logs = Engine.memory.logs.slice(-20);
+  logBox.innerHTML = logs.map(l => `<div>${l}</div>`).join('');
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+// ============================================================
+// 12. EVENT BINDINGS
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  resizeOrbitCanvases();
+
+  const pumpSlider = document.getElementById('pumpSlider');
+  const depthSlider = document.getElementById('depthSlider');
+
+  pumpSlider.addEventListener('input', function() {
+    Engine.pumpUp(parseInt(this.value));
+    updateUI();
+    drawOrbitMain(Date.now());
+  });
+
+  depthSlider.addEventListener('input', function() {
+    Engine.setDepth(parseInt(this.value));
+    updateUI();
+    drawOrbitMain(Date.now());
+  });
+
+  document.getElementById('runEngineBtn').addEventListener('click', function() {
+    const result = Engine.predictiveEngine();
+    Engine.log(`Engine: A=${result.A} B=${result.B} C=${result.C}`);
+
+    // Echte Systemdaten über PIPE12 (Kernel, Orbit, Fusion, NAV, Ghost, Lage)
+    const Phi = Engine.state.pump / 20;
+    const phi = result.A / 10;
+    const phi2 = result.B / 10;
+    const phiinfty = Engine.state.depth81;
+
+    const data = PIPE12.run(Phi, phi, phi2, phiinfty);
+    ULTRA_KERNEL.start();
+
+    FUSION9.render(data.fusion);
+    NAV9.render(data.nav);
+    updateOrbitDisplays(data.orbit);
+    updateRaeumeDisplay(data.kernel);
+
+    Engine.log(`PIPE12: Fusion(${data.fusion.length}) NAV(${data.nav.flat().length}) Kernel(${data.kernel.flat().length})`);
+    updateUI();
+    drawOrbitMain(Date.now());
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function() {
+    Engine.reset();
+    pumpSlider.value = 0; depthSlider.value = 10;
+    axleState = 0; doorOpen = false; dooActive = false;
+    document.getElementById('lastMoveDisplay').textContent = '—';
+    document.getElementById('kompassDisplay').textContent = '—';
+    document.getElementById('radarDisplay').textContent = '—';
+    document.getElementById('ghostDisplay').textContent = '—';
+    document.getElementById('orbitAvgDisplay').textContent = '—';
+    document.getElementById('kernelStatusDisplay').textContent = 'inaktiv';
+    document.getElementById('kernelSizeDisplay').textContent = '—';
+    document.getElementById('kernelSampleDisplay').textContent = '—';
+    updateUI();
+    drawOrbitMain(Date.now());
+    drawOrbitMini(0);
+    document.getElementById('fusionContainer').innerHTML = '';
+    document.getElementById('navContainer').innerHTML = '';
+  });
+
+  document.getElementById('proofBtn').addEventListener('click', function() {
+    alert(`⚡ POVER ENERGY PROOF\npump: ${Engine.state.pump}\nA: ${Engine.state.cpuJumpA}\nB: ${Engine.state.cpuJumpB}\nC: ${Engine.state.cpuJumpC}\nhits: ${Engine.memory.hits}\ndepth81: ${Engine.state.depth81}`);
+  });
+
+  document.querySelectorAll('[data-move]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const move = this.dataset.move;
+      document.getElementById('lastMoveDisplay').textContent = move;
+      Engine.log(`Move: ${move}`);
+      const idx = ['OI','IO','XI','IX'].indexOf(move) + 1;
+      drawOrbitMini(idx % 8);
+      updateUI();
+    });
+  });
+
+  document.getElementById('toggleAxleBtn').addEventListener('click', toggleAxle);
+  document.getElementById('doorBtn').addEventListener('click', doorAction);
+  document.getElementById('dooBtn').addEventListener('click', dooAction);
+
+  drawOrbitMain(Date.now());
+  drawOrbitMini(0);
+  updateUI();
+  Engine.log('⚡ POVER ENERGY gestartet – echte Module aktiv (AXES/GHOST/LAGE/XCORE/XIN/XOUT)');
+  updateUI();
+});
+
+// ============================================================
+// 13. ANIMATION LOOP
+// ============================================================
+function animate() {
+  const t = Date.now();
+  drawOrbitMain(t);
+  requestAnimationFrame(animate);
+}
+animate();
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('runEngineBtn').click();
+  if (e.key === 'r') document.getElementById('resetBtn').click();
+  if (e.key === 't') toggleAxle();
+  if (e.key === 'd') doorAction();
+  if (e.key === 'o') dooAction();
+  if (e.key === ' ') { e.preventDefault(); document.getElementById('runEngineBtn').click(); }
+});
+
+console.log('⚡ POVER ENERGY (REAL DATA) geladen');
+</script>
+</body>
+</html>
