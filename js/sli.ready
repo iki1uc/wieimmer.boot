@@ -1,1 +1,66 @@
+// ============================================================
+// SLI.READY · SUITE · STAGE · RESPO
+// wieimmer.boot · XyX · AIR · AIV
+// ============================================================
+
+import { ROOM81 } from "./room81.airxyx.js";
+import { RESPO } from "./respo_bridge.js";
+import { PIPE } from "./pipeline12.master.js";
+import { ULTRA } from "./ultra.kernel.js";
+
+// ============================================================
+// 1. SUITE – Systemvorbereitung
+// ============================================================
+
+export const SLI = {
+
+  SUITE: {
+    name: "wieimmer.boot.suite",
+    version: "3-9-81-READY",
+    init() {
+      console.log("🧥 SLI.SUITE → bereit");
+      RESPO.init();
+      ULTRA.boot();
+    }
+  },
+
+  // ============================================================
+  // 2. STAGE – Bühne für Orbit, Stoff, Engine
+  // ============================================================
+
+  STAGE: {
+    active: false,
+    start() {
+      this.active = true;
+      console.log("🎭 SLI.STAGE → aktiviert");
+      PIPE.sync();
+    },
+    stop() {
+      this.active = false;
+      console.log("🎭 SLI.STAGE → pausiert");
+    }
+  },
+
+  // ============================================================
+  // 3. RESPO – Datenfluss zwischen Orbit, Stoff, Engine
+  // ============================================================
+
+  RESPO: {
+    pulse(pump, depth) {
+      const run = ROOM81.RUN(pump, depth);
+      RESPO.send("ROOM81.FUSION", run);
+      return run;
+    }
+  },
+
+  // ============================================================
+  // 4. MASTER – Komplettstart
+  // ============================================================
+
+  READY() {
+    this.SUITE.init();
+    this.STAGE.start();
+    console.log("⚡ SLI.READY → Suite, Stage & Respo aktiv");
+  }
+};
 
