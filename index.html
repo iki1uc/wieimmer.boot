@@ -1,338 +1,400 @@
-<!-- nokey: cloning, forking, mirroring prohibited -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>rom.drive · Dashboard</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background: #0f111a;
-      color: #e0e4ee;
-      font-family: 'Consolas', 'Courier New', monospace;
-      padding: 24px;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      max-width: 1100px;
-      width: 100%;
-    }
-
-    /* HEADER */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      border-bottom: 2px solid #3a4a60;
-      padding-bottom: 12px;
-      margin-bottom: 28px;
-    }
-    .header h1 {
-      font-size: 28px;
-      letter-spacing: 4px;
-      background: linear-gradient(90deg, #4caf50, #ffeb3b, #f44336);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .header .sub {
-      font-size: 14px;
-      color: #7788aa;
-    }
-
-    /* GRID */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 28px;
-    }
-    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: #181c2a;
-      border: 1px solid #2a3a50;
-      border-radius: 12px;
-      padding: 18px 22px;
-    }
-    .card h2 {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: #5a7a8a;
-      border-bottom: 1px solid #2a3a50;
-      padding-bottom: 6px;
-      margin-bottom: 14px;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      font-size: 14px;
-      border-bottom: 1px solid #1a2240;
-    }
-    .row .label { color: #7788aa; }
-    .row .value { font-weight: bold; }
-
-    .green  { color: #4caf50; }
-    .yellow { color: #ffeb3b; }
-    .red    { color: #f44336; }
-    .blue   { color: #64b5f6; }
-
-    .mono-box {
-      background: #0b0e16;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      white-space: pre-wrap;
-      font-family: inherit;
-      color: #aabbcc;
-      border: 1px solid #1a2240;
-      max-height: 180px;
-      overflow-y: auto;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 12px;
-      border-radius: 30px;
-      font-size: 11px;
-      background: #1a2240;
-      border: 1px solid #2a3a60;
-    }
-
-    .footer {
-      margin-top: 24px;
-      padding-top: 14px;
-      border-top: 1px solid #1a2240;
-      font-size: 11px;
-      color: #445566;
-      text-align: center;
-    }
-    .footer .closed {
-      color: #f44336;
-      letter-spacing: 2px;
-    }
-
-    .status-led {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IKI1UC · Axiom‑4 · INDUSTRY PUMP · PREDICTIVE SPRUNG · REPARIERT</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a12;color:#d0d9e6;font-family:'Consolas',monospace;padding:10px;min-height:100vh}
+        h1{text-align:center;letter-spacing:3px;font-weight:300;font-size:22px;background:linear-gradient(90deg,#ffd700,#00ccff,#ff66ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+        h1 small{font-size:10px;display:block;color:#3d5a70;-webkit-text-fill-color:#3d5a70;letter-spacing:2px}
+        .flex{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:3px 0}
+        .panel{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,200,255,0.08)}
+        .panel h3{font-size:10px;color:#3d5a70;letter-spacing:2px;margin-bottom:5px;text-transform:uppercase}
+        button{background:#0f0;color:#000;font-weight:bold;border:none;padding:4px 12px;border-radius:4px;font-family:monospace;font-size:10px;cursor:pointer}
+        button:hover{background:#0ff}
+        button.sec{background:transparent;color:#0f0;border:1px solid #0f0}
+        button.sec:hover{background:#0f0;color:#000}
+        button.gold{background:#ffd700;color:#000}
+        button.gold:hover{background:#ffaa00}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+        @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+        pre{background:rgba(0,0,0,0.4);padding:8px;border-radius:6px;border:1px solid rgba(0,200,255,0.05);font-size:9px;line-height:1.3;white-space:pre-wrap;color:#8ab4c8;margin:4px 0;max-height:120px;overflow:auto}
+        .badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:8px;margin:0 2px}
+        .badge.info{background:#0a1a2a;color:#66ccff}
+        .status-row{display:flex;flex-wrap:wrap;gap:6px;font-size:9px;margin:3px 0;color:#5a7a8a}
+        .status-row span{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:3px}
+        .console{background:#0a0a0a;padding:6px;border-radius:4px;font-size:7px;color:#3d5a70;max-height:80px;overflow-y:auto;border:1px solid #111}
+        .console .log-ok{color:#6bffa9}
+        .console .log-warn{color:#ffd700}
+        .console .log-info{color:#66ccff}
+        .console .log-err{color:#ff6b8a}
+        .matrix-3x2{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:4px 0}
+        .cell{background:#0a0a0a;padding:4px;text-align:center;font-size:8px;border:1px solid #111;border-radius:3px;color:#3d5a70}
+        .cell.active{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
+        .cell.gold{background:#2a1a0a;color:#ffd700;border-color:#ffd700}
+        .axle-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin:3px 0}
+        .axle-cell{background:#0a0a0a;padding:3px;text-align:center;font-size:7px;border:1px solid #111;border-radius:2px;color:#3d5a70;cursor:pointer}
+        .axle-cell.on{background:#0a2a1a;color:#6bffa9;border-color:#0f0}
+        .axle-cell.off{background:#0a0a0a;color:#3d5a70}
+    </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>rom.drive</h1>
-    <div class="sub">human · org · reorg · <span class="badge">CLOSED</span></div>
-  </div>
+<h1>⚡ IKI1UC · AXIOM‑4 · INDUSTRY PUMP</h1>
+<h1 style="font-size:11px;margin-top:-2px;background:none;-webkit-text-fill-color:#3d5a70;color:#3d5a70;font-weight:400">PREDICTIVE SPRUNG · 3×2 PREFETCH · REPARIERT, LAUFFÄHIG</h1>
 
-  <!-- GRID: Status & Sync -->
-  <div class="grid">
-    <div class="card">
-      <h2>🌀 Zustand · Status</h2>
-      <div class="row"><span class="label">NC.mode</span><span class="value" id="ncMode">—</span></div>
-      <div class="row"><span class="label">sli.ready</span><span class="value" id="sliReady">—</span></div>
-      <div class="row"><span class="label">rom.ready</span><span class="value" id="romReady">—</span></div>
-      <div class="row"><span class="label">Sync</span><span class="value" id="syncState">—</span></div>
-      <div style="margin-top:12px;">
-        <span class="badge" style="background:#1a2a1a;border-color:#4caf50;">grün – aktiv</span>
-        <span class="badge" style="background:#2a2a1a;border-color:#ffeb3b;">gelb – bereit</span>
-        <span class="badge" style="background:#2a1a1a;border-color:#f44336;">rot – still</span>
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h3>🎯 INDUSTRY · STEUERUNG</h3>
+      <div class="flex">
+        <button class="gold" id="btnGeneral">⚡ GENERAL RUN</button>
+        <button id="btnReset">⟲ RESET</button>
+        <button class="sec" id="btnToggleAll">🔄 ALL TOGGLE</button>
+        <button id="btnRandom">🎲 RANDOM</button>
+        <button id="btnPump">💨 PUMP</button>
       </div>
     </div>
 
-    <div class="card">
-      <h2>🔗 Module · Achsen</h2>
-      <div class="row"><span class="label">MOVE</span><span class="value" id="moveStatus">—</span></div>
-      <div class="row"><span class="label">FORM</span><span class="value" id="formStatus">—</span></div>
-      <div class="row"><span class="label">VEC</span><span class="value" id="vecStatus">—</span></div>
-      <div class="row"><span class="label">SYN</span><span class="value" id="synStatus">—</span></div>
-      <div style="margin-top:12px; font-size:12px; color:#667;">
-        ja – sync · nein – desync · bla – form
+    <div class="panel">
+      <h3>🌀 9 ACHSEN · d e i n o r s u w</h3>
+      <div class="axle-grid" id="axleGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>🔷 PUMP · STATIONEN</h3>
+      <div class="flex" style="font-size:8px;color:#5a7a8a;gap:2px">
+        <span class="badge info">HY</span><span class="badge info">PE</span>
+        <span class="badge info">PER</span><span class="badge info">DA</span>
+        <span class="badge info">NE</span><span class="badge info">BEN</span>
+        <span class="badge info">TRANS</span><span class="badge info">WARB</span>
+        <span class="badge info">KANAL</span>
       </div>
     </div>
-  </div>
 
-  <!-- TEMP‑DATEIEN (tmp.*) -->
-  <div class="card" style="margin-bottom:20px;">
-    <h2>📦 Temporäre Achsen · tmp.*</h2>
-    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); gap:6px; font-size:12px;" id="tmpContainer">
-      <!-- wird per JS gefüllt -->
+    <div class="panel">
+      <h3>📊 STATUS</h3>
+      <div class="status-row">
+        <span>SCORE: <span id="scoreVal" style="color:#ffd700">0</span></span>
+        <span>PUMP: <span id="pumpVal" style="color:#6bffa9">0</span></span>
+        <span>QUOTE: <span id="quoteVal" style="color:#66ccff">0%</span></span>
+        <span>PREDICT: <span id="predictVal" style="color:#ffd700">IDLE</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📜 CONSOLE · LOG</h3>
+      <div class="console" id="consoleLog">⏳ system initialisiert...</div>
     </div>
   </div>
 
-  <!-- USER.JSON -->
-  <div class="card" style="margin-bottom:20px;">
-    <h2>👤 user.json · Identität</h2>
-    <div class="mono-box" id="userJsonDisplay">lade …</div>
-  </div>
-
-  <!-- LOOPS (use/user) -->
-  <div class="grid">
-    <div class="card">
-      <h2>🌀 use · loops</h2>
-      <div id="useLoops" style="font-size:12px; color:#8899bb;"></div>
+  <div>
+    <div class="panel">
+      <h3>📊 3×2 PREFETCH · IKI1UC</h3>
+      <div class="matrix-3x2" id="prefetchGrid"></div>
     </div>
-    <div class="card">
-      <h2>🌀 user · loops</h2>
-      <div id="userLoops" style="font-size:12px; color:#8899bb;"></div>
+
+    <div class="panel">
+      <h3>📈 MASSNAHME · ERGEBNISSE</h3>
+      <pre id="resultDisplay">⏳ berechne...</pre>
+    </div>
+
+    <div class="panel">
+      <h3>❓ MYSTERY ACHSEN · Q / D / F</h3>
+      <div class="flex" style="font-size:8px;gap:6px">
+        <span>Q: <span id="qVal" style="color:#66ccff">0</span></span>
+        <span>D: <span id="dVal" style="color:#6bffa9">0</span></span>
+        <span>F: <span id="fVal" style="color:#ffd700">0</span></span>
+        <span style="color:#3d5a70">|</span>
+        <span>ROOT: <span id="rootVal" style="color:#6bffa9">0</span></span>
+        <span>ACHSE: <span id="achseVal" style="color:#66ccff">A</span></span>
+        <span>TMP: <span id="tmpVal" style="color:#ffd700">128</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🧠 CPU PREDICTIVE · SPRUNG</h3>
+      <div class="flex" style="font-size:8px;gap:6px">
+        <span>STATUS: <span id="cpuStatus" style="color:#6bffa9">ACTIVE</span></span>
+        <span>BIAS: <span id="cpuBias" style="color:#ffd700">FORWARD</span></span>
+        <span>SPRUNG: <span id="cpuJump" style="color:#ff6b8a">0</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🔄 3×2 FENSTER · LIVE</h3>
+      <div class="matrix-3x2" id="liveWindow"></div>
     </div>
   </div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <span class="closed">⚡ CLOSED · kein Klonen · kein Forken · kein Spiegeln</span><br>
-    <span style="color:#445566;">lernen erwünscht · ausnutzen verboten · frag freundlich</span>
-  </div>
-
 </div>
 
 <script>
-  // ============================================================
-  // 1. HILFSFUNKTIONEN
-  // ============================================================
-  async function fetchText(url, fallback = '—') {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error();
-      return (await res.text()).trim();
-    } catch {
-      return fallback;
+// ============================================================
+// IKI1UC · AXIOM‑4 · INDUSTRY PUMP · PREDICTIVE SPRUNG
+// REPARIERT: keine Platzhalter "{ ... }", keine doppelten Keys,
+// kein Code außerhalb des Objekts, Template-String korrekt geschlossen.
+// ============================================================
+const engine = {
+
+  // ---------- KERNEL ----------
+  state: {
+    score: 1000,
+    pump: 0,
+    quote: 0.5,
+    predict: 'IDLE',
+    cpuJump: 0,
+    cpuBias: 'FORWARD',
+    root: 0,
+    achse: 'A',
+    tmp: 128,
+    q: 27,
+    d: 81,
+    f: 243
+  },
+
+  axles: 'deinorsuw'.split('').map(ch => ({ name: ch, active: false })),
+  stations: ['HY','PE','PER','DA','NE','BEN','TRANS','WARB','KANAL'],
+  prefetch: [[3, 9], [27, 81], [243, 729]],
+  liveWindow: [['3','9'], ['27','81'], ['243','729']],
+  memory: { hits: 0, misses: 0, slides: [], jumps: [] },
+
+  // ---------- TODO: ohne echten Inhalt in der Originaldatei ----------
+  // Diese 5 Funktionen kamen in deinem Code nur als "{ ... }" vor,
+  // ohne jemals eine echte Implementierung zu haben. Ich habe hier
+  // NICHTS erfunden — sag mir, was sie tun sollen, dann bau ich sie.
+  orbitFusion() { this.log('⚠️ orbitFusion: noch nicht implementiert (kein Original-Code vorhanden)', 'warn'); },
+  pumpKernel() { this.log('⚠️ pumpKernel: noch nicht implementiert (kein Original-Code vorhanden)', 'warn'); },
+  predictiveEngine() { this.log('⚠️ predictiveEngine: noch nicht implementiert (kein Original-Code vorhanden)', 'warn'); },
+  windowEngine() { this.log('⚠️ windowEngine: noch nicht implementiert (kein Original-Code vorhanden)', 'warn'); },
+  loopAll() { this.log('⚠️ loopAll: noch nicht implementiert (kein Original-Code vorhanden)', 'warn'); },
+
+  // ---------- LOG ----------
+  log(msg, type = 'info') {
+    const el = document.getElementById('consoleLog');
+    const t = new Date().toLocaleTimeString();
+    const cls = type === 'ok' ? 'log-ok' : type === 'warn' ? 'log-warn' : type === 'err' ? 'log-err' : 'log-info';
+    el.innerHTML += `<div class="${cls}">[${t}] ${msg}</div>`;
+    el.scrollTop = el.scrollHeight;
+    if (el.children.length > 30) el.removeChild(el.firstChild);
+  },
+
+  // ---------- RENDER ----------
+  render() {
+    this.renderAxles();
+    this.renderPrefetch();
+    this.renderLiveWindow();
+    this.updateStatus();
+    this.updateMystery();
+    this.updateCPU();
+    this.renderResult();
+  },
+
+  renderAxles() {
+    const grid = document.getElementById('axleGrid');
+    grid.innerHTML = '';
+    this.axles.forEach((a, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'axle-cell' + (a.active ? ' on' : ' off');
+      cell.textContent = a.name.toUpperCase();
+      cell.onclick = () => this.toggleAxle(i);
+      grid.appendChild(cell);
+    });
+  },
+
+  renderPrefetch() {
+    const grid = document.getElementById('prefetchGrid');
+    grid.innerHTML = '';
+    this.prefetch.forEach(row => row.forEach(val => {
+      const cell = document.createElement('div');
+      cell.className = 'cell active';
+      cell.textContent = val;
+      grid.appendChild(cell);
+    }));
+  },
+
+  renderLiveWindow() {
+    const grid = document.getElementById('liveWindow');
+    grid.innerHTML = '';
+    this.liveWindow.forEach(row => row.forEach(val => {
+      const cell = document.createElement('div');
+      cell.className = 'cell gold';
+      cell.textContent = val;
+      grid.appendChild(cell);
+    }));
+  },
+
+  updateStatus() {
+    document.getElementById('scoreVal').textContent = this.state.score;
+    document.getElementById('pumpVal').textContent = this.state.pump;
+    document.getElementById('quoteVal').textContent = Math.round(this.state.quote * 100) + '%';
+    document.getElementById('predictVal').textContent = this.state.predict;
+  },
+
+  updateMystery() {
+    document.getElementById('qVal').textContent = this.state.q;
+    document.getElementById('dVal').textContent = this.state.d;
+    document.getElementById('fVal').textContent = this.state.f;
+    document.getElementById('rootVal').textContent = this.state.root;
+    document.getElementById('achseVal').textContent = this.state.achse;
+    document.getElementById('tmpVal').textContent = this.state.tmp;
+  },
+
+  updateCPU() {
+    document.getElementById('cpuStatus').textContent = this.state.predict === 'ACTIVE' ? 'ACTIVE' : 'IDLE';
+    document.getElementById('cpuBias').textContent = this.state.cpuBias;
+    document.getElementById('cpuJump').textContent = this.state.cpuJump;
+  },
+
+  renderResult() {
+    const el = document.getElementById('resultDisplay');
+    const active = this.axles.filter(a => a.active).length;
+    const p = this.state.pump;
+    const q = Math.round(this.state.quote * 100);
+    el.textContent =
+`MASSNAHME · IKI1UC
+─────────────────
+aktive Achsen : ${active} / 9
+Pump-Stack    : ${p} / 128
+Trefferquote  : ${q}%
+Predict       : ${this.state.predict}
+Sprung        : ${this.state.cpuJump}`;
+  },
+
+  // ---------- ACHSEN ----------
+  toggleAxle(i) {
+    this.axles[i].active = !this.axles[i].active;
+    const active = this.axles.filter(a => a.active).length;
+    this.state.achse = active > 0 ? String.fromCharCode(64 + active) : '0';
+    this.state.root = active;
+    this.log(`achse ${this.axles[i].name} → ${this.axles[i].active ? 'ON' : 'OFF'}`, 'info');
+    this.render();
+    this.triggerPredict();
+  },
+
+  // ---------- PUMP ----------
+  pumpCycle() {
+    const active = this.axles.filter(a => a.active).length;
+    if (active === 0) {
+      this.log('❗ keine achse aktiv — pump gestoppt', 'err');
+      return;
     }
-  }
+    this.state.pump = Math.min(this.state.pump + active, 128);
+    this.state.score += active * 2;
+    this.state.quote = Math.min(1, this.state.quote + 0.01);
 
-  function setVal(id, val) {
-    document.getElementById(id).textContent = val;
-  }
+    const vals = [3,9,27,81,243,729];
+    const shift = this.state.pump % 6;
+    this.liveWindow = [
+      [vals[(shift)%6], vals[(shift+1)%6]],
+      [vals[(shift+2)%6], vals[(shift+3)%6]],
+      [vals[(shift+4)%6], vals[(shift+5)%6]]
+    ];
 
-  function setColorClass(id, val) {
-    const el = document.getElementById(id);
-    el.className = 'value';
-    if (val === 'aktiv' || val === 'ja' || val === 'sync') el.classList.add('green');
-    else if (val === 'bereit' || val === 'form') el.classList.add('yellow');
-    else if (val === 'still' || val === 'nein' || val === 'desync') el.classList.add('red');
-    else if (val === 'bla') el.classList.add('blue');
-  }
+    this.log(`💨 PUMP · stack=${this.state.pump} · score+${active*2}`, 'ok');
+    this.render();
+    this.triggerPredict();
+  },
 
-  // ============================================================
-  // 2. STATUS AUS DATEIEN LADEN
-  // ============================================================
-  async function loadStatus() {
-    // NC.mode
-    const nc = await fetchText('NC.mode', 'idle');
-    setVal('ncMode', nc);
-    setColorClass('ncMode', nc);
+  // ---------- PREDICTIVE ----------
+  triggerPredict() {
+    const active = this.axles.filter(a => a.active).length;
+    const quote = this.state.quote;
 
-    // sli.ready
-    const sli = await fetchText('sli.ready', 'false');
-    setVal('sliReady', sli);
-    setColorClass('sliReady', sli === 'true' ? 'aktiv' : 'still');
+    if (active > 0 && quote > 0.4) {
+      this.state.predict = 'ACTIVE';
+      this.state.cpuBias = quote > 0.6 ? 'FORWARD' : 'REVERSE';
+      this.state.cpuJump = active + Math.floor(this.state.pump / 10);
 
-    // rom.ready (aus arg.SYNC)
-    const rom = await fetchText('arg.SYNC/rom.ready', 'false');
-    setVal('romReady', rom);
-    setColorClass('romReady', rom === 'true' ? 'aktiv' : 'still');
+      this.state.q = 3 * active + this.state.pump % 10;
+      this.state.d = 9 * active + Math.floor(this.state.pump / 5);
+      this.state.f = 27 * active + Math.floor(this.state.pump / 3);
 
-    // Sync-Zustand (aus tmp.s oder syn.js simulieren)
-    const syncRaw = await fetchText('tmp.s', 'sync');
-    const syncMap = { 'sync':'ja · sync', 'desync':'nein · desync', 'form':'bla · form' };
-    const syncDisplay = syncMap[syncRaw] || syncRaw;
-    setVal('syncState', syncDisplay);
-    setColorClass('syncState', syncRaw);
+      this.state.root = active;
+      this.state.tmp = 128 - this.state.pump;
 
-    // Module (aus arg.SYNC/*_CORE.js o.ä. simulieren)
-    const move = await fetchText('arg.SYNC/AIR6D_MOVE.js', 'aktiv');
-    setVal('moveStatus', move.includes('function') ? 'aktiv' : 'bereit');
-    setColorClass('moveStatus', move.includes('function') ? 'aktiv' : 'bereit');
+      const hit = this.state.cpuJump > 0;
+      if (hit) {
+        this.memory.hits++;
+        this.memory.slides.push(active);
+        this.memory.jumps.push(this.state.cpuJump);
+      } else {
+        this.memory.misses++;
+      }
+      this.state.quote = (this.memory.hits + 1) / (this.memory.hits + this.memory.misses + 2);
 
-    const form = await fetchText('arg.SYNC/FORM_CORE.js', 'form');
-    setVal('formStatus', form.includes('function') ? 'form' : 'form');
-    setColorClass('formStatus', 'form');
-
-    const vec = await fetchText('arg.SYNC/VEC_CORE.js', 'vec');
-    setVal('vecStatus', vec.includes('function') ? 'sync' : 'vec');
-    setColorClass('vecStatus', vec.includes('function') ? 'sync' : 'vec');
-
-    const syn = await fetchText('arg.SYNC/syn.js', 'syn');
-    setVal('synStatus', syn.includes('function') ? 'sync' : 'syn');
-    setColorClass('synStatus', syn.includes('function') ? 'sync' : 'syn');
-  }
-
-  // ============================================================
-  // 3. TMP‑DATEIEN ANZEIGEN
-  // ============================================================
-  async function loadTmpFiles() {
-    const letters = ['a','d','e','i','o','r','s','w'];
-    const container = document.getElementById('tmpContainer');
-    container.innerHTML = '';
-    for (const l of letters) {
-      const val = await fetchText(`tmp.${l}`, '0');
-      const div = document.createElement('div');
-      div.style.cssText = 'background:#121824;padding:6px 8px;border-radius:6px;text-align:center;';
-      div.innerHTML = `<strong>tmp.${l}</strong><br><span style="color:${val === '0' ? '#667' : '#ffd700'};">${val}</span>`;
-      container.appendChild(div);
+      this.log(`🧠 PREDICT · ${this.state.cpuBias} · sprung=${this.state.cpuJump} · quote=${Math.round(this.state.quote*100)}%`, 'warn');
+    } else {
+      this.state.predict = 'IDLE';
+      this.state.cpuJump = 0;
+      this.log('⏸ PREDICT · idle', 'info');
     }
+    this.render();
+  },
+
+  runGeneral() {
+    this.axles.forEach(a => a.active = true);
+    for (let i = 0; i < 3; i++) this.pumpCycle();
+    this.state.score += 50;
+    this.log('⚡ GENERAL RUN · alles aktiv · score+50', 'ok');
+    this.render();
+    this.triggerPredict();
+  },
+
+  toggleAll() {
+    const allOn = this.axles.every(a => a.active);
+    this.axles.forEach(a => a.active = !allOn);
+    this.log(`🔄 ALL TOGGLE → ${allOn ? 'OFF' : 'ON'}`, 'info');
+    this.render();
+    this.triggerPredict();
+  },
+
+  randomize() {
+    this.axles.forEach(a => a.active = Math.random() > 0.5);
+    this.state.score = Math.floor(Math.random() * 500) + 500;
+    this.state.pump = Math.floor(Math.random() * 30);
+    this.state.quote = 0.3 + Math.random() * 0.5;
+    this.state.cpuJump = Math.floor(Math.random() * 20);
+    this.log('🎲 RANDOM · neuer zustand', 'warn');
+    this.render();
+    this.triggerPredict();
+  },
+
+  resetAll() {
+    this.axles.forEach(a => a.active = false);
+    Object.assign(this.state, {
+      score: 1000, pump: 0, quote: 0.5, predict: 'IDLE', cpuJump: 0,
+      cpuBias: 'FORWARD', root: 0, achse: '0', tmp: 128, q: 27, d: 81, f: 243
+    });
+    this.memory = { hits: 0, misses: 0, slides: [], jumps: [] };
+    this.liveWindow = [['3','9'], ['27','81'], ['243','729']];
+    document.getElementById('consoleLog').innerHTML = '⏳ system zurückgesetzt...';
+    this.log('⟲ RESET · komplett neu', 'ok');
+    this.render();
+  },
+
+  init() {
+    this.log('🚀 AXIOM‑4 · INDUSTRY PUMP · PREDICTIVE SPRUNG', 'ok');
+    this.log('📊 9 ACHSEN · 3×2 PREFETCH · MYSTERY Q/D/F', 'info');
+    this.log('💨 PUMP · CPU‑PREDICT · TREFFERQUOTE', 'info');
+    this.render();
+    setTimeout(() => this.triggerPredict(), 500);
+    setInterval(() => {
+      if (this.axles.some(a => a.active)) this.pumpCycle();
+    }, 8000);
   }
+};
 
-  // ============================================================
-  // 4. USER.JSON
-  // ============================================================
-  async function loadUserJson() {
-    const display = document.getElementById('userJsonDisplay');
-    try {
-      const res = await fetch('user.json');
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      display.textContent = JSON.stringify(data, null, 2);
-    } catch {
-      display.textContent = 'user.json nicht gefunden oder nicht lesbar.';
-    }
-  }
+document.getElementById('btnGeneral').addEventListener('click', () => engine.runGeneral());
+document.getElementById('btnReset').addEventListener('click', () => engine.resetAll());
+document.getElementById('btnToggleAll').addEventListener('click', () => engine.toggleAll());
+document.getElementById('btnRandom').addEventListener('click', () => engine.randomize());
+document.getElementById('btnPump').addEventListener('click', () => engine.pumpCycle());
 
-  // ============================================================
-  // 5. LOOPS (use/ & user/)
-  // ============================================================
-  async function loadLoops() {
-    const loops = ['1.loop','2.loop','3.loop','4.loop','8.loop','9.loop'];
-    const useContainer = document.getElementById('useLoops');
-    const userContainer = document.getElementById('userLoops');
-
-    let useHtml = '';
-    for (const l of loops) {
-      const val = await fetchText(`use/${l}`, '0');
-      useHtml += `<span style="margin-right:10px;">${l} = ${val}</span>`;
-    }
-    useContainer.innerHTML = useHtml || 'keine loops gefunden';
-
-    let userHtml = '';
-    for (const l of loops) {
-      const val = await fetchText(`user/${l}`, '0');
-      userHtml += `<span style="margin-right:10px;">${l} = ${val}</span>`;
-    }
-    userContainer.innerHTML = userHtml || 'keine loops gefunden';
-  }
-
-  // ============================================================
-  // 6. INIT
-  // ============================================================
-  async function init() {
-    await loadStatus();
-    await loadTmpFiles();
-    await loadUserJson();
-    await loadLoops();
-  }
-
-  init();
+engine.init();
+window.engine = engine;
 </script>
+
 </body>
 </html>
